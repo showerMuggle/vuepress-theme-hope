@@ -1,14 +1,14 @@
 {
   "name": "md-enhance-docs",
-  "version": "2.0.0-beta.181",
   "private": true,
   "description": "Docs for vuepress-plugin-md-enhance",
   "license": "MIT",
   "author": {
     "name": "Mr.Hope",
     "email": "mister-hope@outlook.com",
-    "url": "https://mrhope.site"
+    "url": "https://mister-hope.com"
   },
+  "type": "module",
   "scripts": {
     "docs:serve": "http-server -a localhost dist -o",
     "docs:vite-build": "vuepress-vite build src",
@@ -19,15 +19,23 @@
     "docs:webpack-dev": "vuepress-webpack dev src"
   },
   "dependencies": {
-    "@types/katex": "0.16.0",
-    "@vuepress/client": "2.0.0-beta.61",
+    "@types/katex": "0.16.7",
+    "@vuepress/bundler-vite": "2.0.0-rc.19",
+    "@vuepress/bundler-webpack": "2.0.0-rc.19",
+    "@vuepress/helper": "2.0.0-rc.70",
+    "@vueuse/core": "12.4.0",
     "docs-shared": "workspace:*",
-    "katex": "0.16.6",
-    "sass-loader": "13.2.2",
-    "vue": "3.2.47",
+    "echarts-wordcloud": "2.1.0",
+    "flowchart.ts": "3.0.1",
+    "katex": "0.16.20",
+    "mermaid": "11.4.1",
+    "sandpack-vue3": "3.1.12",
+    "sass-embedded": "1.83.1",
+    "sass-loader": "16.0.4",
+    "vue": "3.5.13",
+    "vuepress": "2.0.0-rc.19",
     "vuepress-plugin-md-enhance": "workspace:*",
     "vuepress-shared": "workspace:*",
-    "vuepress-vite": "2.0.0-beta.61",
-    "vuepress-webpack": "2.0.0-beta.61"
+    "vuepress-theme-hope": "workspace:*"
   }
 }

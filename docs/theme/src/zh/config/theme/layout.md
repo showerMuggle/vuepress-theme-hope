@@ -15,21 +15,15 @@ tag:
 
 ## 导航栏
 
-具体介绍详见 [布局 → 导航栏](../../guide/layout/navbar.md)。
-
 ### navbar <Badge text="建议配置" type="tip" />
 
 - 类型: `NavbarConfig | false`
 - 默认值: `false`
+- 详情:
+  - [布局 → 导航栏 → 导航栏链接](../../guide/layout/navbar.md#导航栏链接)
+  - [布局 → 导航栏 → 禁用导航栏](../../guide/layout/navbar.md#禁用导航栏)
 
-导航栏配置，具体配置方式见上方详情。
-
-### navbarIcon
-
-- 类型: `boolean`
-- 默认值: `true`
-
-是否在导航栏显示图标。
+导航栏配置。
 
 ### navbarLayout
 
@@ -37,7 +31,7 @@ tag:
 
   ```ts
   /**
-   * 导航栏组件
+   * 内置导航栏组件
    */
   type NavbarComponent =
     | "Brand"
@@ -58,8 +52,10 @@ tag:
   ```
 
 - 默认值: `{ start: ["Brand"], center: ["Links"], end: ["Language", "Repo", "Outlook", "Search"] }`
+- 详情:
+  - [布局 → 导航栏 → 导航栏布局](../../guide/layout/navbar.md#布局配置)
 
-自定义导航栏布局
+自定义导航栏布局。
 
 ### logo <Badge text="建议配置" type="tip" />
 
@@ -71,9 +67,16 @@ tag:
 ### logoDark
 
 - 类型: `string`
-- 必填: 否
+- 默认值: `logo`
 
 夜间模式下导航栏图标，应为基于 `.vuepress/public` 文件夹的绝对路径。
+
+### navbarTitle
+
+- 类型: `string`
+- 默认值: `$siteLocale.title`
+
+导航栏标题，你可以设置为 `''` 来隐藏它。
 
 ### repo
 
@@ -122,17 +125,10 @@ tag:
 
 ### sidebar <Badge text="建议配置" type="tip" />
 
-- 类型: `SidebarConfig | "structure" | "heading" | false`
+- 类型: `SidebarConfig | "structure" | false`
 - 默认值: `"structure"`
 
 侧边栏配置。
-
-### sidebarIcon
-
-- 类型: `boolean`
-- 默认值: `true`
-
-是否在侧边栏显示图标。
 
 ### sidebarSorter <Badge text="仅限 Root" type="warning" />
 
@@ -181,7 +177,7 @@ tag:
 
   type SidebarSorterFunction = (
     infoA: SidebarInfo,
-    infoB: SidebarInfo
+    infoB: SidebarInfo,
   ) => number;
 
   type SidebarSorter =
@@ -374,4 +370,4 @@ tag:
 - 类型: `boolean`
 - 默认值: `true`
 
-是否在桌面模式下右侧展示标题列表
+是否显示标题列表

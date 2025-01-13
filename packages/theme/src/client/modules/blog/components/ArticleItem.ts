@@ -1,6 +1,6 @@
-import { withBase } from "@vuepress/client";
-import { type PropType, type VNode, defineComponent, h, toRef } from "vue";
-import { RouterLink } from "vue-router";
+import type { PropType, SlotsType, VNode } from "vue";
+import { defineComponent, h, toRef } from "vue";
+import { RouteLink, withBase } from "vuepress/client";
 
 import {
   SlideIcon,
@@ -8,11 +8,16 @@ import {
 } from "@theme-hope/modules/blog/components/icons/index";
 import { useArticleInfo } from "@theme-hope/modules/blog/composables/index";
 import { LockIcon } from "@theme-hope/modules/encrypt/components/icons";
+import type { PageInfoProps } from "@theme-hope/modules/info/components/PageInfo";
 import PageInfo from "@theme-hope/modules/info/components/PageInfo";
 
+import type {
+  ArticleInfoData,
+  PageInfoData,
+} from "../../../../shared/index.js";
 import {
-  type ArticleInfo,
-  ArticleInfoType,
+  ArticleInfo,
+  PageInfo as PageInfoEnum,
   PageType,
 } from "../../../../shared/index.js";
 
@@ -28,7 +33,7 @@ export default defineComponent({
      * 文章信息
      */
     info: {
-      type: Object as PropType<ArticleInfo>,
+      type: Object as PropType<PageInfoData & ArticleInfoData>,
       required: true,
     },
 
@@ -40,38 +45,53 @@ export default defineComponent({
     path: { type: String, required: true },
   },
 
+  slots: Object as SlotsType<{
+    cover?: (props: { cover: string | undefined }) => VNode[] | VNode | null;
+    title?: (props: {
+      title: string;
+      isEncrypted?: boolean;
+      type: string;
+    }) => VNode[] | VNode | null;
+    excerpt?: (props: {
+      excerpt: string | undefined;
+    }) => VNode[] | VNode | null;
+    info?: (props: { info: PageInfoProps }) => VNode[] | VNode | null;
+  }>,
+
   setup(props, { slots }) {
     const articleInfo = toRef(props, "info");
     const { info: pageInfo, items } = useArticleInfo(props);
 
     return (): VNode => {
       const {
-        [ArticleInfoType.title]: title,
-        [ArticleInfoType.type]: type,
-        [ArticleInfoType.isEncrypted]: isEncrypted,
-        [ArticleInfoType.cover]: cover,
-        [ArticleInfoType.excerpt]: excerpt,
-        [ArticleInfoType.sticky]: sticky,
+        [PageInfoEnum.title]: title,
+        [ArticleInfo.type]: type,
+        [ArticleInfo.isEncrypted]: isEncrypted = false,
+        [ArticleInfo.cover]: cover,
+        [ArticleInfo.excerpt]: excerpt,
+        [ArticleInfo.sticky]: sticky,
       } = articleInfo.value;
       const info = pageInfo.value;
 
       return h(
         "div",
-        { class: "article-item" },
+        { class: "vp-article-wrapper" },
         h(
           "article",
           {
-            class: "article",
+            class: "vp-article-item",
             vocab: "https://schema.org/",
             typeof: "Article",
           },
           [
-            slots["cover"]?.({ cover }) ||
+            slots.cover?.({ cover }) ??
               (cover
                 ? [
                     h("img", {
-                      class: "article-cover",
+                      class: "vp-article-cover",
                       src: withBase(cover),
+                      alt: "",
+                      loading: "lazy",
                     }),
                     h("meta", {
                       property: "image",
@@ -81,31 +101,31 @@ export default defineComponent({
                 : []),
             sticky ? h(StickyIcon) : null,
             h(
-              RouterLink,
+              RouteLink,
               { to: props.path },
               () =>
-                slots["title"]?.({ title, isEncrypted, type }) ||
-                h("header", { class: "title" }, [
+                slots.title?.({ title, isEncrypted, type }) ??
+                h("header", { class: "vp-article-title" }, [
                   isEncrypted ? h(LockIcon) : null,
                   type === PageType.slide ? h(SlideIcon) : null,
                   h("span", { property: "headline" }, title),
-                ])
+                ]),
             ),
-            slots["excerpt"]?.({ excerpt }) ||
+            slots.excerpt?.({ excerpt }) ??
               (excerpt
                 ? h("div", {
-                    class: "article-excerpt",
+                    class: "vp-article-excerpt",
                     innerHTML: excerpt,
                   })
                 : null),
-            h("hr", { class: "hr" }),
-            slots["info"]?.({ info }) ||
+            h("hr", { class: "vp-article-hr" }),
+            slots.info?.({ info }) ??
               h(PageInfo, {
                 info,
                 ...(items.value ? { items: items.value } : {}),
               }),
-          ]
-        )
+          ],
+        ),
       );
     };
   },

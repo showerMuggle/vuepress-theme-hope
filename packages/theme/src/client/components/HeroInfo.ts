@@ -1,107 +1,197 @@
+import { isString } from "@vuepress/helper/client";
+import type { SlotsType, VNode } from "vue";
+import { computed, defineComponent, h, resolveComponent } from "vue";
 import {
   usePageFrontmatter,
   useSiteLocaleData,
   withBase,
-} from "@vuepress/client";
-import { type VNode, computed, defineComponent, h } from "vue";
+} from "vuepress/client";
 
 import AutoLink from "@theme-hope/components/AutoLink";
-import DropTransition from "@theme-hope/components/transitions/DropTransition";
+import { DropTransition } from "@theme-hope/components/transitions/index";
 
-import { type ThemeProjectHomePageFrontmatter } from "../../shared/index.js";
+import type { ThemeProjectHomePageFrontmatter } from "../../shared/index.js";
 
 import "../styles/hero-info.scss";
 
+export interface HeroInfoData {
+  text: string | null;
+  tagline: string | null;
+  isFullScreen: boolean;
+}
+
+export interface HeroImageData {
+  image: string | null;
+  imageDark: string | null;
+  imageStyle: string | Record<string, string> | undefined;
+  alt: string;
+  isFullScreen: boolean;
+}
+
+export interface HeroBackgroundData {
+  image: string | null;
+  bgStyle: string | Record<string, string> | undefined;
+  isFullScreen: boolean;
+}
+
 export default defineComponent({
   name: "HeroInfo",
+
+  slots: Object as SlotsType<{
+    bg?: (props: HeroBackgroundData) => VNode[] | VNode | null;
+    logo?: (props: HeroImageData) => VNode[] | VNode | null;
+    info?: (props: HeroInfoData) => VNode[] | VNode | null;
+  }>,
 
   setup(_props, { slots }) {
     const frontmatter = usePageFrontmatter<ThemeProjectHomePageFrontmatter>();
     const siteLocale = useSiteLocaleData();
 
-    const heroText = computed(() => {
-      if (frontmatter.value.heroText === false) return false;
-
-      return frontmatter.value.heroText || siteLocale.value.title || "Hello";
-    });
-
-    const tagline = computed(() => {
-      if (frontmatter.value.tagline === false) return false;
-
-      return (
-        frontmatter.value.tagline ||
-        siteLocale.value.description ||
-        "Welcome to your VuePress site"
-      );
-    });
-
-    const heroImage = computed(() => {
-      if (!frontmatter.value.heroImage) return null;
-
-      return withBase(frontmatter.value.heroImage);
-    });
-
-    const heroImageDark = computed(() => {
-      if (!frontmatter.value.heroImageDark) return null;
-
-      return withBase(frontmatter.value.heroImageDark);
-    });
-
-    const heroAlt = computed(
-      () => frontmatter.value.heroAlt || heroText.value || "hero"
+    const isFullScreen = computed(
+      () => frontmatter.value.heroFullScreen ?? false,
     );
+
+    const info = computed(() => {
+      const { heroText, tagline } = frontmatter.value;
+
+      return {
+        text: heroText ?? (siteLocale.value.title || "Hello"),
+        tagline: tagline ?? siteLocale.value.description,
+        isFullScreen: isFullScreen.value,
+      };
+    });
+
+    const logo = computed(() => {
+      const { heroText, heroImage, heroImageDark, heroAlt, heroImageStyle } =
+        frontmatter.value;
+
+      return {
+        image: heroImage ? withBase(heroImage) : null,
+        imageDark: heroImageDark ? withBase(heroImageDark) : null,
+        imageStyle: heroImageStyle,
+        alt: heroAlt ?? heroText ?? "",
+        isFullScreen: isFullScreen.value,
+      };
+    });
+
+    const bg = computed(() => {
+      const { bgImage, bgImageDark, bgImageStyle } = frontmatter.value;
+
+      return {
+        image: isString(bgImage) ? withBase(bgImage) : null,
+        imageDark: isString(bgImageDark) ? withBase(bgImageDark) : null,
+        bgStyle: bgImageStyle,
+        isFullScreen: isFullScreen.value,
+      };
+    });
 
     const actions = computed(() => frontmatter.value.actions ?? []);
 
     return (): VNode =>
-      h("header", { class: "hero-info-wrapper" }, [
-        slots["heroImage"]?.() ||
-          h(DropTransition, { appear: true, type: "group" }, () => [
-            heroImage.value
-              ? h("img", {
-                  key: "light",
-                  class: { light: heroImageDark.value },
-                  src: heroImage.value,
-                  alt: heroAlt.value,
+      h(
+        "header",
+        { class: ["vp-hero-info-wrapper", { fullscreen: isFullScreen.value }] },
+        [
+          slots.bg?.(bg.value) ?? [
+            bg.value.image
+              ? h("div", {
+                  class: ["vp-hero-mask", { light: bg.value.imageDark }],
+                  style: [
+                    { "background-image": `url(${bg.value.image})` },
+                    bg.value.bgStyle,
+                  ],
                 })
               : null,
-            heroImageDark.value
-              ? h("img", {
-                  key: "dark",
-                  class: "dark",
-                  src: heroImageDark.value,
-                  alt: heroAlt.value,
+            bg.value.imageDark
+              ? h("div", {
+                  class: "vp-hero-mask dark",
+                  style: [
+                    {
+                      "background-image": `url(${bg.value.imageDark})`,
+                    },
+                    bg.value.bgStyle,
+                  ],
                 })
               : null,
-          ]),
-        slots["heroInfo"]?.() ||
-          h("div", { class: "hero-info" }, [
-            heroText.value
-              ? h(DropTransition, { appear: true, delay: 0.04 }, () =>
-                  h("h1", { id: "main-title" }, <string>heroText.value)
-                )
-              : null,
-            tagline.value
-              ? h(DropTransition, { appear: true, delay: 0.08 }, () =>
-                  h("p", { class: "description" }, <string>tagline.value)
-                )
-              : null,
-            actions.value.length
-              ? h(DropTransition, { appear: true, delay: 0.12 }, () =>
-                  h(
-                    "p",
-                    { class: "actions" },
-                    actions.value.map((action) =>
-                      h(AutoLink, {
-                        class: ["action-button", action.type || "default"],
-                        config: action,
-                        noExternalLinkIcon: true,
+          ],
+
+          h("div", { class: "vp-hero-info" }, [
+            slots.logo?.(logo.value) ??
+              h(DropTransition, { appear: true, type: "group" }, () => {
+                const { image, imageDark, imageStyle, alt } = logo.value;
+
+                return [
+                  image
+                    ? h("img", {
+                        key: "light",
+                        class: ["vp-hero-image", { light: imageDark }],
+                        style: imageStyle,
+                        src: image,
+                        alt: alt,
                       })
+                    : null,
+                  imageDark
+                    ? h("img", {
+                        key: "dark",
+                        class: "vp-hero-image dark",
+                        style: imageStyle,
+                        src: imageDark,
+                        alt: alt,
+                      })
+                    : null,
+                ];
+              }),
+            slots.info?.(info.value) ??
+              h("div", { class: "vp-hero-infos" }, [
+                info.value.text
+                  ? h(DropTransition, { appear: true, delay: 0.04 }, () =>
+                      h(
+                        "h1",
+                        { id: "main-title", class: "vp-hero-title" },
+                        info.value.text,
+                      ),
                     )
-                  )
-                )
-              : null,
+                  : null,
+                info.value.tagline
+                  ? h(DropTransition, { appear: true, delay: 0.08 }, () =>
+                      h("p", {
+                        id: "main-description",
+                        innerHTML: info.value.tagline,
+                      }),
+                    )
+                  : null,
+                actions.value.length
+                  ? h(DropTransition, { appear: true, delay: 0.12 }, () =>
+                      h(
+                        "p",
+                        { class: "vp-hero-actions" },
+                        actions.value.map((action) =>
+                          h(
+                            AutoLink,
+                            {
+                              class: [
+                                "vp-hero-action",
+                                action.type ?? "default",
+                                "no-external-link-icon",
+                              ],
+                              config: action,
+                            },
+                            action.icon
+                              ? {
+                                  before: () =>
+                                    h(resolveComponent("VPIcon"), {
+                                      icon: action.icon,
+                                    }),
+                                }
+                              : {},
+                          ),
+                        ),
+                      ),
+                    )
+                  : null,
+              ]),
           ]),
-      ]);
+        ],
+      );
   },
 });

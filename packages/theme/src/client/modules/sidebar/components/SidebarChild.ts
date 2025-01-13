@@ -1,16 +1,13 @@
-import { type PropType, type VNode, defineComponent } from "vue";
-import { useRoute } from "vue-router";
+import { isString } from "@vuepress/helper/client";
+import type { PropType, VNode } from "vue";
+import { defineComponent, h, resolveComponent } from "vue";
+import { useRoute } from "vuepress/client";
 
-import {
-  renderChildren,
-  renderItem,
-} from "@theme-hope/modules/sidebar/composables/index";
-import { isActiveSidebarItem } from "@theme-hope/modules/sidebar/utils/index";
+import AutoLink from "@theme-hope/components/AutoLink";
+import { isActiveItem } from "@theme-hope/utils/index";
 
-import {
-  type ResolvedSidebarHeaderItem,
-  type ResolvedSidebarPageItem,
-} from "../utils/index.js";
+import type { AutoLinkOptions } from "../../../../shared/index.js";
+import type { SidebarLinkItem } from "../utils/index.js";
 
 import "../styles/sidebar-child.scss";
 
@@ -24,10 +21,7 @@ export default defineComponent({
      * 侧边栏项目配置
      */
     config: {
-      type: Object as PropType<
-        ResolvedSidebarPageItem | ResolvedSidebarHeaderItem
-        // eslint-disable-next-line vue/new-line-between-multi-line-property
-      >,
+      type: Object as PropType<SidebarLinkItem>,
       required: true,
     },
   },
@@ -35,16 +29,23 @@ export default defineComponent({
   setup(props) {
     const route = useRoute();
 
-    return (): (VNode | null)[] => [
-      renderItem(props.config, {
-        class: [
-          "sidebar-link",
-          `sidebar-${props.config.type}`,
-          { active: isActiveSidebarItem(route, props.config, true) },
-        ],
-        exact: true,
-      }),
-      renderChildren(props.config.children),
-    ];
+    return (): VNode =>
+      isString(props.config.link)
+        ? // If the item has link, render it as `<AutoLink>`
+          h(AutoLink, {
+            class: [
+              "vp-sidebar-link",
+              { active: isActiveItem(route, props.config) },
+            ],
+            config: {
+              ...props.config,
+              exact: true,
+            } as AutoLinkOptions,
+          })
+        : // If the item only has text, render it as `<p>`
+          h("p", props, [
+            h(resolveComponent("VPIcon"), { icon: props.config.icon }),
+            props.config.text,
+          ]);
   },
 });

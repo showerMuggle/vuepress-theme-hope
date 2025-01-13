@@ -1,8 +1,11 @@
-import { bundle } from "../../scripts/rollup.js";
+import { rollupBundle } from "../../scripts/rollup.js";
 
 export default [
-  ...bundle("node/index"),
-  ...bundle("client/config", {
-    external: [/^lightgallery/],
-  }),
+  ...rollupBundle("node/index"),
+  ...rollupBundle(
+    { base: "client", files: ["config", "index"] },
+    {
+      external: [/^lightgallery/],
+    },
+  ),
 ];

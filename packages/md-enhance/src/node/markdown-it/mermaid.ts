@@ -1,58 +1,110 @@
-import { type PluginSimple } from "markdown-it";
-import type Renderer from "markdown-it/lib/renderer.js";
-import { utoa } from "vuepress-shared/node";
+import { encodeData } from "@vuepress/helper";
+import type { PluginSimple } from "markdown-it";
+import type { RenderRule } from "markdown-it/lib/renderer.mjs";
 
-const mermaidRender: Renderer.RenderRule = (tokens, index) =>
-  `<Mermaid id="mermaid-${index}" code="${utoa(
-    tokens[index].content
+const mermaidRenderer: RenderRule = (tokens, index) =>
+  `<Mermaid id="mermaid-${index}" code="${encodeData(
+    tokens[index].content,
   )}"></Mermaid>`;
 
-// a hack for sequenceDiagram
-const mermaidHackRender = (
-  name: string,
-  content: string,
-  index: number
-): string =>
-  `<Mermaid id="mermaid-${index}" code="${utoa(
-    `${name}\n${content
-      .split("\n")
-      .map((line) => (line ? `  ${line}` : ""))
-      .join("\n")}`
-  )}"></Mermaid>`;
+interface MermaidOptions {
+  content: string;
+  diagram?: string;
+  title?: string;
+  indent?: boolean;
+}
+
+export const getMermaidContent = ({
+  diagram = "mermaid",
+  content,
+  title = "",
+  indent = diagram !== "mermaid",
+}: MermaidOptions): string => `\
+${
+  title
+    ? `\
+---
+title: ${title}
+---
+
+`
+    : ""
+}\
+${
+  diagram === "mermaid"
+    ? ""
+    : `\
+${diagram}
+`
+}\
+${
+  indent
+    ? content
+        .split("\n")
+        .map((line) => (line ? `  ${line}` : ""))
+        .join("\n")
+    : content
+}\
+`;
+
+const getMermaid = (options: MermaidOptions, index: number): string =>
+  `<Mermaid id="mermaid-${index}" code="${encodeData(getMermaidContent(options))}"${
+    options.title ? ` title="${encodeData(options.title)}"` : ""
+  }></Mermaid>`;
+
+const DIAGRAM_MAP: Record<string, [diagramName: string, indent?: boolean]> = {
+  class: ["classDiagram"],
+  c4c: ["C4Context"],
+  er: ["erDiagram"],
+  gantt: [""],
+  "git-graph": ["gitGraph"],
+  journey: [""],
+  mindmap: [""],
+  kanban: [""],
+  pie: [""],
+  quadrant: ["quadrantChart"],
+  requirement: ["requirementDiagram"],
+  sequence: ["sequenceDiagram"],
+  state: ["stateDiagram-v2"],
+  timeline: [""],
+
+  // beta diagrams
+  architecture: ["architecture-beta"],
+  block: ["block-beta", false],
+  packet: ["packet-beta", false],
+  sankey: ["sankey-beta", false],
+  xy: ["xychart-beta", false],
+};
 
 export const mermaid: PluginSimple = (md) => {
   // Handle ```mermaid blocks
-  const fence = md.renderer.rules.fence;
+  const { fence } = md.renderer.rules;
 
   md.renderer.rules.fence = (...args): string => {
     const [tokens, index] = args;
     const { content, info } = tokens[index];
 
-    if (info.trim() === "mermaid") return mermaidRender(...args);
-    if (info.trim() === "sequence")
-      return mermaidHackRender("sequenceDiagram", content, index);
-    if (info.trim() === "class")
-      return mermaidHackRender("classDiagram", content, index);
-    if (info.trim() === "state")
-      return mermaidHackRender("stateDiagram-v2", content, index);
-    if (info.trim() === "er")
-      return mermaidHackRender("erDiagram", content, index);
-    if (info.trim() === "journey")
-      return mermaidHackRender("journey", content, index);
-    if (info.trim() === "gantt")
-      return mermaidHackRender("gantt", content, index);
-    if (info.trim() === "pie") return mermaidHackRender("pie", content, index);
-    if (info.trim() === "git-graph")
-      return mermaidHackRender("gitGraph", content, index);
-    if (info.trim() === "c4c")
-      return mermaidHackRender("C4Context", content, index);
-    if (info.trim() === "mindmap")
-      return mermaidHackRender("mindmap", content, index);
-    if (info.trim() === "timeline")
-      return mermaidHackRender("timeline", content, index);
+    const fenceInfo = info.trim();
 
+    if (fenceInfo === "mermaid")
+      return getMermaid({ content, indent: false }, index);
+
+    const [name, ...rest] = fenceInfo.split(" ");
+
+    if (name in DIAGRAM_MAP)
+      return getMermaid(
+        {
+          diagram: DIAGRAM_MAP[name][0] || name,
+          title: rest.join(" "),
+          content,
+          indent: DIAGRAM_MAP[name][1] ?? true,
+        },
+        index,
+      );
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return fence!(...args);
   };
 
-  md.renderer.rules["mermaid"] = mermaidRender;
+  md.renderer.rules.mermaid = mermaidRenderer;
 };

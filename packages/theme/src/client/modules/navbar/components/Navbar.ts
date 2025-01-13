@@ -1,16 +1,13 @@
-import {
-  type Component,
-  type ComponentOptions,
-  type FunctionalComponent,
-  type VNode,
-  computed,
-  defineComponent,
-  h,
-  ref,
-  resolveComponent,
+import { hasGlobalComponent } from "@vuepress/helper/client";
+import noopComponent from "@vuepress/helper/noopComponent";
+import type {
+  Component,
+  ComponentOptions,
+  FunctionalComponent,
+  SlotsType,
+  VNode,
 } from "vue";
-import { hasGlobalComponent } from "vuepress-shared/client";
-import noopModule from "vuepress-shared/noopModule";
+import { computed, defineComponent, h, ref, resolveComponent } from "vue";
 
 import {
   useThemeLocaleData,
@@ -25,19 +22,24 @@ import ToggleNavbarButton from "@theme-hope/modules/navbar/components/ToggleNavb
 import ToggleSidebarButton from "@theme-hope/modules/navbar/components/ToggleSidebarButton";
 import OutlookButton from "@theme-hope/modules/outlook/components/OutlookButton";
 
-import {
-  type NavbarComponent,
-  type NavbarLayoutOptions,
-} from "../../../../shared/index.js";
+import type { NavbarLayoutOptions } from "../../../../shared/index.js";
 
 import "../styles/navbar.scss";
 
-declare const HAS_MULTIPLE_LANGUAGES: boolean;
+declare const __VP_MULTI_LANGUAGES__: boolean;
 
 export default defineComponent({
   name: "NavBar",
 
   emits: ["toggleSidebar"],
+
+  slots: Object as SlotsType<{
+    default: () => VNode[] | VNode | null;
+
+    // Navbar
+    screenTop?: () => VNode[] | VNode | null;
+    screenBottom?: () => VNode[] | VNode | null;
+  }>,
 
   setup(_props, { emit, slots }) {
     const themeLocale = useThemeLocaleData();
@@ -56,117 +58,97 @@ export default defineComponent({
 
     const navbarLayout = computed(
       () =>
-        themeLocale.value.navbarLayout ||
-        <NavbarLayoutOptions>{
+        themeLocale.value.navbarLayout ??
+        ({
           start: ["Brand"],
           center: ["Links"],
           end: ["Language", "Repo", "Outlook", "Search"],
-        }
+        } as NavbarLayoutOptions),
     );
 
-    const navbarComponentMap: Record<
-      NavbarComponent | string,
-      Component | string
-    > = {
+    const navbarComponentMap: Record<string, Component | string> = {
       Brand: NavbarBrand,
-      Language: HAS_MULTIPLE_LANGUAGES ? LanguageDropdown : noopModule,
+      Language: __VP_MULTI_LANGUAGES__ ? LanguageDropdown : noopComponent,
       Links: NavbarLinks,
       Repo: RepoLink,
       Outlook: OutlookButton,
-      Search: hasGlobalComponent("Docsearch")
-        ? resolveComponent("Docsearch")
-        : hasGlobalComponent("SearchBox")
+      Search: hasGlobalComponent("SearchBox")
         ? resolveComponent("SearchBox")
-        : noopModule,
+        : noopComponent,
     };
 
-    const getNavbarComponent = (
-      component: NavbarComponent | string
-    ): Component | string =>
+    const getNavbarComponent = (component: string): Component | string =>
       navbarComponentMap[component] ??
       (hasGlobalComponent(component)
         ? resolveComponent(component)
-        : noopModule);
+        : noopComponent);
 
-    return (): VNode[] => {
-      return [
-        h(
-          "header",
-          {
-            class: [
-              "navbar",
-              {
-                "auto-hide": autoHide.value,
-                "hide-icon": themeLocale.value.navbarIcon === false,
+    return (): VNode[] => [
+      h(
+        "header",
+        {
+          key: "navbar",
+          id: "navbar",
+          class: ["vp-navbar", { "auto-hide": autoHide.value }],
+          "vp-navbar": "",
+        },
+        [
+          h("div", { class: "vp-navbar-start" }, [
+            h(ToggleSidebarButton, {
+              onToggle: () => {
+                if (showScreen.value) showScreen.value = false;
+                emit("toggleSidebar");
               },
-            ],
-            id: "navbar",
+            }),
+            navbarLayout.value.start?.map((item) =>
+              h(
+                getNavbarComponent(item) as
+                  | ComponentOptions
+                  | FunctionalComponent,
+              ),
+            ),
+          ]),
+
+          h("div", { class: "vp-navbar-center" }, [
+            navbarLayout.value.center?.map((item) =>
+              h(
+                getNavbarComponent(item) as
+                  | ComponentOptions
+                  | FunctionalComponent,
+              ),
+            ),
+          ]),
+
+          h("div", { class: "vp-navbar-end" }, [
+            navbarLayout.value.end?.map((item) =>
+              h(
+                getNavbarComponent(item) as
+                  | ComponentOptions
+                  | FunctionalComponent,
+              ),
+            ),
+            h(ToggleNavbarButton, {
+              active: showScreen.value,
+              onToggle: () => {
+                showScreen.value = !showScreen.value;
+              },
+            }),
+          ]),
+        ],
+      ),
+      h(
+        NavScreen,
+        {
+          show: showScreen.value,
+          onClose: () => {
+            showScreen.value = false;
           },
-          [
-            h("div", { class: "navbar-start" }, [
-              h(ToggleSidebarButton, {
-                onToggle: () => {
-                  if (showScreen.value) showScreen.value = false;
-                  emit("toggleSidebar");
-                },
-              }),
-              slots["startBefore"]?.(),
-              (navbarLayout.value.start || []).map((item) =>
-                h(
-                  <ComponentOptions | FunctionalComponent>(
-                    getNavbarComponent(item)
-                  )
-                )
-              ),
-              slots["startAfter"]?.(),
-            ]),
-
-            h("div", { class: "navbar-center" }, [
-              slots["centerBefore"]?.(),
-              (navbarLayout.value.center || []).map((item) =>
-                h(
-                  <ComponentOptions | FunctionalComponent>(
-                    getNavbarComponent(item)
-                  )
-                )
-              ),
-              slots["centerAfter"]?.(),
-            ]),
-
-            h("div", { class: "navbar-end" }, [
-              slots["endBefore"]?.(),
-              (navbarLayout.value.end || []).map((item) =>
-                h(
-                  <ComponentOptions | FunctionalComponent>(
-                    getNavbarComponent(item)
-                  )
-                )
-              ),
-              slots["endAfter"]?.(),
-
-              h(ToggleNavbarButton, {
-                active: showScreen.value,
-                onToggle: () => {
-                  showScreen.value = !showScreen.value;
-                },
-              }),
-            ]),
-          ]
-        ),
-        h(
-          NavScreen,
-          {
-            show: showScreen.value,
-            onClose: () => {
-              showScreen.value = false;
-            },
-          },
-          {
-            before: () => slots["screenTop"]?.(),
-            after: () => slots["screenBottom"]?.(),
-          }
-        ),
-      ];
-    };
+        },
+        {
+          before: slots.screenTop,
+          after: slots.screenBottom,
+        },
+      ),
+    ];
   },
 });

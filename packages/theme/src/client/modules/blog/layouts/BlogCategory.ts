@@ -1,17 +1,9 @@
-import { usePageData, usePageFrontmatter } from "@vuepress/client";
-import {
-  type VNode,
-  computed,
-  defineComponent,
-  h,
-  resolveComponent,
-} from "vue";
-import {
-  type BlogCategoryFrontmatterOptions,
-  type BlogPluginFrontmatter,
-} from "vuepress-plugin-blog2";
+import type { BlogPluginFrontmatter } from "@vuepress/plugin-blog";
+import type { VNode } from "vue";
+import { computed, defineComponent, h } from "vue";
+import { usePageData, usePageFrontmatter } from "vuepress/client";
 
-import DropTransition from "@theme-hope/components/transitions/DropTransition";
+import { DropTransition } from "@theme-hope/components/transitions/index";
 import ArticleList from "@theme-hope/modules/blog/components/ArticleList";
 import BlogWrapper from "@theme-hope/modules/blog/components/BlogWrapper";
 import CategoryList from "@theme-hope/modules/blog/components/CategoryList";
@@ -25,67 +17,60 @@ import {
 import "../styles/page.scss";
 
 export default defineComponent({
-  name: "BlogPage",
-
-  components: {
-    CategoryList,
-    TagList,
-  },
+  name: "BlogCategory",
 
   setup() {
     const page = usePageData();
     const frontmatter = usePageFrontmatter<BlogPluginFrontmatter>();
     const categoryMap = useCategoryMap();
     const tagMap = useTagMap();
-    const blogOptions = computed(
-      () => (frontmatter.value.blog || {}) as BlogCategoryFrontmatterOptions
-    );
 
-    const componentName = computed(() => {
-      const { key = "" } = blogOptions.value;
-
-      return key === "category"
-        ? "CategoryList"
-        : key === "tag"
-        ? "TagList"
-        : null;
-    });
+    const blogOptions = computed(() => frontmatter.value.blog);
 
     const items = computed(() => {
-      const { name = "", key = "" } = blogOptions.value;
+      if (blogOptions.value?.type !== "category") return null;
+
+      const { name, key } = blogOptions.value;
+
+      if (!name) return null;
 
       return key === "category"
-        ? name
-          ? categoryMap.value.map[name].items
-          : []
+        ? categoryMap.value.map[name].items
         : key === "tag"
-        ? name
           ? tagMap.value.map[name].items
-          : []
-        : [];
+          : null;
     });
 
-    return (): VNode =>
-      h(BlogWrapper, () =>
+    return (): VNode => {
+      return h(BlogWrapper, () =>
         h(
           "div",
-          { class: "page blog" },
+          { class: "vp-page vp-blog" },
           h("div", { class: "blog-page-wrapper" }, [
-            h("main", { class: "blog-main", id: "main-content" }, [
+            h("main", { id: "main-content", class: "vp-blog-main" }, [
               h(DropTransition, () =>
-                componentName.value
-                  ? h(resolveComponent(componentName.value))
-                  : null
+                blogOptions.value?.key === "category"
+                  ? h(CategoryList)
+                  : blogOptions.value?.key === "tag"
+                    ? h(TagList)
+                    : null,
               ),
-              blogOptions.value.name
+              items.value
                 ? h(DropTransition, { appear: true, delay: 0.24 }, () =>
-                    h(ArticleList, { key: page.value.path, items: items.value })
+                    h(ArticleList, {
+                      key: page.value.path,
+                      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                      items: items.value!,
+                    }),
                   )
                 : null,
             ]),
-            h(DropTransition, { delay: 0.16 }, () => h(InfoPanel)),
-          ])
-        )
+            h(DropTransition, { delay: 0.16 }, () =>
+              h(InfoPanel, { key: "blog" }),
+            ),
+          ]),
+        ),
       );
+    };
   },
 });

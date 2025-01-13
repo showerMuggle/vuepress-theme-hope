@@ -1,7 +1,7 @@
 ---
 title: 评论插件配置
 icon: comment-dots
-order: 3
+order: 5
 category:
   - 配置
 tag:
@@ -12,21 +12,21 @@ tag:
 
 ## 介绍
 
-主题使用 `vuepress-plugin-comment2` 提供评论支持，并将主题选项中的 `plugin.comment` 作为插件选项传递。
+主题使用 `@vuepress/plugin-comment` 提供评论支持，并将主题选项中的 `plugins.comment` 作为插件选项传递。
 
-`vuepress-plugin-comment2` 目前支持 3 种评论服务:
+`@vuepress/plugin-comment` 目前支持 4 种评论服务:
 
 - Artalk
 - Giscus
 - Twikoo
 - Waline
 
-::: note
-
-如果你不需要评论功能，请忽略此选项。
+::: note 如果你不需要评论功能，请忽略此选项。
 
 :::
 
 ## 选项
 
-对于每个评论服务对应选项的详细信息，请参考 <ProjectLink name="comment2" path="/zh/config/">vuepress-plugin-comment2 文档</ProjectLink>。
+对于每个评论服务对应选项的详细信息，请参考 [@vuepress/plugin-comment 文档][comment]。
+
+[comment]: https://ecosystem.vuejs.press/zh/plugins/blog/comment/

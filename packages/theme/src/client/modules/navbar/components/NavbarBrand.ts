@@ -1,6 +1,11 @@
-import { useRouteLocale, useSiteLocaleData, withBase } from "@vuepress/client";
-import { type VNode, computed, defineComponent, h } from "vue";
-import { RouterLink } from "vue-router";
+import type { VNode } from "vue";
+import { computed, defineComponent, h } from "vue";
+import {
+  RouteLink,
+  useRouteLocale,
+  useSiteLocaleData,
+  withBase,
+} from "vuepress/client";
 
 import { useThemeLocaleData } from "@theme-hope/composables/index";
 
@@ -15,51 +20,65 @@ export default defineComponent({
     const themeLocale = useThemeLocaleData();
 
     const siteBrandLink = computed(
-      () => themeLocale.value.home || routeLocale.value
+      () => themeLocale.value.home ?? routeLocale.value,
     );
 
-    const siteBrandTitle = computed(() => siteLocale.value.title);
+    const siteTitle = computed(() => siteLocale.value.title);
+    const siteBrandTitle = computed(
+      () => themeLocale.value.navbarTitle ?? siteTitle.value,
+    );
 
     const siteBrandLogo = computed(() =>
-      themeLocale.value.logo ? withBase(themeLocale.value.logo) : null
+      themeLocale.value.logo ? withBase(themeLocale.value.logo) : null,
     );
 
     const siteBrandLogoDark = computed(() =>
-      themeLocale.value.logoDark ? withBase(themeLocale.value.logoDark) : null
+      themeLocale.value.logoDark ? withBase(themeLocale.value.logoDark) : null,
     );
 
     return (): VNode =>
-      h(RouterLink, { to: siteBrandLink.value, class: "brand" }, () => [
-        siteBrandLogo.value
-          ? h("img", {
-              class: ["logo", { light: Boolean(siteBrandLogoDark.value) }],
-              src: siteBrandLogo.value,
-              alt: siteBrandTitle.value,
-            })
-          : null,
-        siteBrandLogoDark.value
-          ? h("img", {
-              class: ["logo dark"],
-              src: siteBrandLogoDark.value,
-              alt: siteBrandTitle.value,
-            })
-          : null,
-        siteBrandTitle.value
-          ? h(
-              "span",
-              {
+      h(
+        RouteLink,
+        {
+          to: siteBrandLink.value,
+          class: "vp-brand",
+          "aria-label": themeLocale.value.routeLocales.home,
+        },
+        () => [
+          siteBrandLogo.value
+            ? h("img", {
                 class: [
-                  "site-name",
-                  {
-                    "hide-in-pad":
-                      siteBrandLogo.value &&
-                      themeLocale.value.hideSiteNameOnMobile !== false,
-                  },
+                  "vp-nav-logo",
+                  { light: Boolean(siteBrandLogoDark.value) },
                 ],
-              },
-              siteBrandTitle.value
-            )
-          : null,
-      ]);
+                src: siteBrandLogo.value,
+                alt: "",
+              })
+            : null,
+          siteBrandLogoDark.value
+            ? h("img", {
+                class: ["vp-nav-logo dark"],
+                src: siteBrandLogoDark.value,
+                alt: "",
+              })
+            : null,
+          siteBrandTitle.value
+            ? h(
+                "span",
+                {
+                  class: [
+                    "vp-site-name",
+                    {
+                      "hide-in-pad":
+                        siteBrandLogo.value &&
+                        (themeLocale.value.hideSiteNameOnMobile ?? true),
+                    },
+                  ],
+                },
+                siteBrandTitle.value,
+              )
+            : null,
+        ],
+      );
   },
 });

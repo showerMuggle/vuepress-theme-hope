@@ -1,37 +1,38 @@
-import { type VNode, computed, defineComponent, h } from "vue";
+import { entries, fromEntries } from "@vuepress/helper/client";
+import type { VNode } from "vue";
+import { computed, defineComponent, h } from "vue";
 
-import {
-  useThemeData,
-  useThemeLocaleData,
-} from "@theme-hope/composables/index";
+import { useThemeLocaleData } from "@theme-hope/composables/index";
 import ThemeColorPicker from "@theme-hope/modules/outlook/components/ThemeColorPicker";
 
-import "../styles/theme-color-picker.scss";
+import cssVariables from "../../../styles/variables.module.scss";
+import "../styles/theme-color.scss";
+
+export const enableThemeColor = cssVariables.enableThemeColor === "true";
+
+const themeColor = enableThemeColor
+  ? fromEntries(
+      entries(cssVariables).filter(([key]) => key.startsWith("theme-")),
+    )
+  : {};
 
 export default defineComponent({
   name: "ThemeColor",
 
   setup() {
-    const themeData = useThemeData();
     const themeLocale = useThemeLocaleData();
 
     const locale = computed(() => themeLocale.value.outlookLocales.themeColor);
 
-    const themeColor = computed(() => {
-      const { themeColor } = themeData.value;
-
-      return themeColor === false ? null : themeColor;
-    });
-
     return (): VNode | null =>
-      themeColor.value
-        ? h("div", { class: "theme-color-wrapper" }, [
+      enableThemeColor
+        ? h("div", { class: "vp-theme-color" }, [
             h(
               "label",
-              { class: "theme-color-title", for: "theme-color-picker" },
-              locale.value
+              { class: "vp-theme-color-title", for: "theme-color-picker" },
+              locale.value,
             ),
-            h(ThemeColorPicker, { themeColor: themeColor.value }),
+            h(ThemeColorPicker, { themeColor }),
           ])
         : null;
   },

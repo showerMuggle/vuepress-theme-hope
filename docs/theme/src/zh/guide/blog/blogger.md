@@ -26,12 +26,6 @@ tag:
 
 :::
 
-::: tip
-
-如果你希望头像被剪裁成圆形，请设置 `blog.roundAvatar: true`。
-
-:::
-
 ## 座右铭、社交媒体与个人介绍页地址
 
 你可以通过 `blog.description` 设置自己的一句话介绍、座右铭或口号。
@@ -45,92 +39,120 @@ tag:
 
   元组的第二个元素应该是一个合法的 SVG 字符串或是一个完整的 SVG 文件路径。
 
-::: tip 可用的社交媒体:
+:::: tip 可用的社交媒体:
 
-- `"Baidu"`: 百度
-- `"BiliBili"`: 哔哩哔哩
-- `"Bitbucket"`: Bitbucket
-- `"Dingding"`: 钉钉
+::: tabs
+
+@tab 社交
+
+- `"CoolApk"`: 酷安
 - `"Discord"`: Discord
 - `"Douban"`: 豆瓣
+- `"Facebook"`: 脸书
+- `"Instagram"`: Instagram
+- `"Kook"`: KOOK 语音
+- `"Line"`: Line
+- `"Messenger"`: Facebook Messenger
+- `"QQ"`: QQ
+- `"Qzone"`: QQ 空间
+- `"Reddit"`: 红迪
+- `"Skype"`: Skype
+- `"SnapChat"`: 色拉布
+- `"Soul"`: Soul
+- `"Telegram"`: 电报
+- `"Tieba"`: 百度贴吧
+- `"Tumblr"`: 汤不热
+- `"Twitter"`: 推特
+- `"VK"`: VKontakte
+- `"Wechat"`: 微信
+- `"Weibo"`: 微博
+- `"Whatsapp"`:瓦次艾普
+- `"YY"`: 歪歪
+
+@tab 办公
+
+- `"Bitbucket"`: Bitbucket
+- `"Dingding"`: 钉钉
 - `"Dribbble"`: Dribbble
 - `"Email"`: 邮件
 - `"Evernote"`: 印象笔记
-- `"Facebook"`: 脸书
-- `"Flipboard"`: 红板报
 - `"Gitee"`: 码云
 - `"GitHub"`: GitHub
 - `"Gitlab"`: Gitlab
 - `"Gmail"`: 谷歌邮箱
-- `"Instagram"`: Instagram
+- `"KDocs"`: 金山文档
 - `"Lark"`: 飞书
-- `"Line"`: Line
 - `"Linkedin"`: 领英
-- `"Pinterest"`: 拼趣
 - `"Pocket"`: Pocket
-- `"QQ"`: QQ
-- `"Qzone"`: QQ 空间
-- `"Reddit"`: 红迪
+- `"QQDocs"`: 腾讯文档
+- `"WechatWork"`: 微信企业版
+
+@tab 聚合
+
+- `"AFDian"`: 爱发电
+- `"Baidu"`: 百度
+- `"Bangumi"`: 番组计划
+- `"DuiTang"`: 堆糖
+- `"Flipboard"`: 红板报
+- `"HuaBan"`: 花瓣
+- `"Pinterest"`: 拼趣
+- `"Pixiv"`: Pixiv
 - `"Rss"`: RSS 地址
-- `"Steam"`: 蒸汽
-- `"Skype"`: Skype
-- `"Telegram"`: 电报
-- `"Twitter"`: 推特
-- `"Wechat"`: 微信
-- `"Weibo"`: 微博
-- `"Whatsapp"`:瓦次艾普
-- `"Youtube"`: 油管
+- `"WechatMP"`: 微信公众号
+- `"XiaoHongShu"`: 小红书
 - `"Zhihu"`: 知乎
 
-(请不要好奇为什么这里一定要加上特别奇怪的中文翻译)
+@tab 音频
+
+- `"163Music"`: 网易云音乐
+- `"5Sing"`: 5sing
+- `"Kugou"`: 酷狗音乐
+- `"Kuwo"`: 酷我音乐
+- `"QQMusic"`: QQ 音乐
+- `"SoundCloud"`: 声云
+- `"XiMaLaYa"`: 喜马拉雅
+
+@tab 视频
+
+- `"AcFun"`: ACFun
+- `"BiliBili"`: 哔哩哔哩
+- `"Douyin"`: 抖音
+- `"Douyu"`: 斗鱼
+- `"HuoShan"`: 抖音火山版
+- `"HuYa"`: 虎牙
+- `"iQiYi"`: 爱奇艺
+- `"KuaiShou"`: 快手
+- `"Nico"`: NicoNico 动画
+- `"QQVideo"`: 腾讯视频
+- `"Twitch"`: Twitch
+- `"WechatCh"`: 微信视频号
+- `"Weishi"`: 微视
+- `"Youku"`: 优酷
+- `"Youtube"`: 油管
+
+@tab 其他
+
+- `"115"`: 115 网盘
+- `"360Yun"`: 360 云盘
+- `"AliDrive"`: 阿里云盘
+- `"AliPay"`: 支付宝
+- `"BaiduDisk"`: 百度网盘
+- `"BattleNET"`: 战网
+- `"IdleFish"`: 闲鱼
+- `"Paypal"`: 贝宝
+- `"Steam"`: 蒸汽
+- `"WechatPay"`: 微信支付
 
 :::
 
-:::: details 例子
+(请不要好奇为什么这里一定要加上特别奇怪的中文翻译)
 
-::: code-tabs#language
+::::
 
-@tab TS
+::: details 例子
 
-```ts
-// .vuepress/config.ts
-import { getDirname, path } from "@vuepress/utils";
-import { defineUserConfig } from "vuepress";
-import { hopeTheme } from "vuepress-theme-hope";
-
-const __dirname = getDirname(import.meta.url);
-
-export default defineUserConfig({
-  theme: hopeTheme({
-    blog: {
-      medias: {
-        // GitHub 已经内置了图标
-        GitHub: "https://github.com/Mister-Hope",
-        // 一个自定义媒体 MediaX (仅作示例)
-        MediaX: [
-          // 链接
-          "https://mediax.com/UserX/",
-          // 图标 SVG 字符串
-          "<svg ....</svg>",
-        ],
-        // 一个自定义媒体 MediaY (仅作示例)
-        MediaY: [
-          // 链接
-          "https://mediay.com/UserY/",
-          // 图标地址
-          path.resolve(__dirname, "icons/mediay.svg"),
-        ],
-      },
-    },
-  }),
-});
-```
-
-@tab JS
-
-```js
-// .vuepress/config.js
-import { getDirname, path } from "@vuepress/utils";
+```js title=".vuepress/config.js"
+import { getDirname, path } from "vuepress/utils";
 import { hopeTheme } from "vuepress-theme-hope";
 
 const __dirname = getDirname(import.meta.url);
@@ -142,19 +164,19 @@ export default {
         // GitHub 已经内置了图标
         GitHub: "https://github.com/Mister-Hope",
         // 一个自定义媒体 MediaX (仅作示例)
-        MediaX: [
-          // 链接
-          "https://mediax.com/UserX/",
+        MediaX: {
           // 图标 SVG 字符串
-          "<svg ....</svg>",
-        ],
-        // 一个自定义媒体 MediaY (仅作示例)
-        MediaY: [
+          icon: "<svg ....</svg>",
           // 链接
-          "https://mediay.com/UserY/",
+          link: "https://mediax.com/UserX/",
+        },
+        // 一个自定义媒体 MediaY (仅作示例)
+        MediaY: {
           // 图标地址
-          path.resolve(__dirname, "icons/mediay.svg"),
-        ],
+          icon: "https://mediay.com/logo.svg",
+          // 链接
+          link: "https://mediay.com/UserY/",
+        },
       },
     },
   }),
@@ -162,5 +184,3 @@ export default {
 ```
 
 :::
-
-::::

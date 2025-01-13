@@ -1,4 +1,4 @@
-import { type ThemeLocaleData } from "../../shared/index.js";
+import type { ThemeLocaleData } from "../../shared/index.js";
 
 export const skLocale: ThemeLocaleData = {
   lang: "sk-SK",
@@ -36,6 +36,7 @@ export const skLocale: ThemeLocaleData = {
     all: "Všetko",
     intro: "Osobné intro",
     star: "Hviezda",
+    empty: "$text je prázdny",
   },
 
   paginationLocales: {
@@ -70,6 +71,5 @@ export const skLocale: ThemeLocaleData = {
     ],
     back: "Choď späť",
     home: "Poď na domovskú stránku",
-    openInNewWindow: "Otvoriť v novom okne",
   },
 };

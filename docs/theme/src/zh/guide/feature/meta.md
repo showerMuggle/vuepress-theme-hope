@@ -18,7 +18,7 @@ tag:
 
 `vuepress-theme-hope` 通过内置 [`@vuepress/plugin-git`][git] 插件，实现了页面创建时间、最后更新时间与贡献者的自动生成。
 
-插件会通过页面文件最后一次 `git` 提交的 UNIX 时间戳 (ms) 来自动生成页面创建时间和最后更新时间，同时根据提交记录生成贡献者。
+插件会通过页面文件 `git` 提交历史中的 UNIX 时间戳 (ms) 来自动生成页面创建时间和最后更新时间，同时根据提交记录生成贡献者。
 
 主题将以合适的日期格式将最后更新时间显示在每一页的底部，同时显示该页面所有贡献者。
 
@@ -39,18 +39,18 @@ tag:
 
 ## 编辑此页链接
 
-你可以通过在主题选项中中设置如下项目，来自动为每个页面生成编辑此页链接:
+你可以通过在主题选项中设置如下项目，来自动为每个页面生成编辑此页链接:
 
 - `docsRepo`: 文档仓库地址，默认同主题选项中的 `repo`
 - `docsDir`: 文档在仓库中的目录，默认为根目录
-- `docsBranch`: 文档存放的分值，默认为 `"main"`
+- `docsBranch`: 文档存放的分支，默认为 `"main"`
 
 ## 显示控制
 
-如果你想要全局禁用这些项目的显示，请在主题选项中中，将以下对应项目设置为 `false`。你也可以通过 `YAML front matter` 中设置这些项目来启用/禁用指定页面:
+如果你想要全局禁用这些项目的显示，请在主题选项中，将以下对应项目设置为 `false`。你也可以在 Frontmatter 中设置这些项目来启用/禁用指定页面:
 
 - `lastUpdated`: 是否显示页面最后更新时间
 - `contributors`: 是否显示页面贡献者
 - `editLink`: 是否展示编辑此页链接
 
-[git]: https://v2.vuepress.vuejs.org/zh/reference/plugin/git.html
+[git]: https://ecosystem.vuejs.press/zh/plugins/development/git.html

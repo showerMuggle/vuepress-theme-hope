@@ -20,6 +20,9 @@ icon: gears
     | "Share"
     | "StackBlitz"
     | "SiteInfo"
+    | "VPBanner"
+    | "VPCard"
+    | "VidStack"
     | "VideoPlayer"
     | "XiGua"
     | "YouTube";
@@ -42,6 +45,9 @@ Available component names:
 - `"Share"`
 - `"StackBlitz"`
 - `"SiteInfo"`
+- `"VPBanner"`
+- `"VPCard"`
+- `"VidStack"`
 - `"VideoPlayer"`
 - `"XiGua"`
 - `"YouTube"`
@@ -55,22 +61,7 @@ Global config for components.
 - Type: `ComponentsArtPlayerOptions`
 - Required: No
 - Details:
-  - [Guide → ArtPlayer](./guide/artplayer.md#global-config)
-
-### componentsOptions.share.services
-
-- Type: `(string | ShareService)[]`
-- Details:
-  - [Guide → Share → Setting component](./guide/share.md#setting-component)
-
-Share services
-
-### componentsOptions.share.twitterUserName
-
-- Type: `string`
-- Required: No
-
-Twitter username.
+  - [Guide → ArtPlayer](./guide/media/art-player.md#global-config)
 
 ### componentsOptions.fontIcon.assets
 
@@ -83,27 +74,23 @@ Twitter username.
     | `http://${string}`
     | `https://${string}`;
 
-  type BuiltInFontIcon =
-    | "iconify"
-    | "iconfont"
-    | "fontawesome"
-    | "fontawesome-with-brands";
+  type BuiltInFontIcon = "iconify" | "fontawesome" | "fontawesome-with-brands";
 
   type FontIconAssets = BuiltInFontIcon | Link | (BuiltInFontIcon | Link)[];
   ```
 
 - Required: No
 - Details:
-  - [Guide → FontIcon](./guide/fonticon.md)
+  - [Guide → FontIcon](./guide/utilities/font-icon.md)
 
-Link of font icon asset, `'iconfont'` and `'fontawesome'` keywords are supported.
+Link of font icon asset, `'iconify'` `'fontawesome'` and `'fontawesome-with-brands'` keywords are supported.
 
 ### componentsOptions.fontIcon.prefix
 
 - Type: `string`
 - Default: Inferred from assets
 - Details:
-  - [Guide → FontIcon](./guide/fonticon.md)
+  - [Guide → FontIcon](./guide/utilities/font-icon.md)
 
 Class prefix of font icon
 
@@ -112,154 +99,28 @@ Class prefix of font icon
 - Type: `string`
 - Required: No
 - Details:
-  - [Guide → PDF → PDFJS](./guide/pdf.md#pdfjs-viewer)
+  - [Guide → PDF → PDFJS](./guide/media/p-d-f.md#pdfjs-viewer)
 
 Location to pdfjs viewer.
 
-## rootComponents
+### componentsOptions.share.services
 
-Components to be mounted at root.
-
-### rootComponents.addThis
-
-- Type: `string | false`
-- Default: `false`
+- Type: `(string | ShareService)[]`
 - Details:
-  - [Guide → AddThis](./guide/addthis.md#usage)
+  - [Guide → Share → Setting component](./guide/utilities/share.md#setting-component)
 
-Public ID of addThis.
+Share services
 
-### rootComponents.backToTop
+### componentsOptions.share.twitterUserName
 
-- Type: `BackToTopOptions | boolean`
-
-  ```ts
-  interface BackToTopOptions {
-    /**
-     * Scroll threshold distance to display back to top button (in pixels)
-     *
-     * @default 100
-     */
-    threshold?: number;
-
-    /**
-     * Whether display scroll progress
-     *
-     * @default true
-     */
-    progress?: boolean;
-  }
-  ```
-
-- Default: `false`
-- Details:
-  - [Guide → BackToTop](./guide/backtotop.md)
-
-Whether enabling backToTop button. When setting a number, it will be used as BackToTop button threshold distance (in pixels), default is 300.
-
-### rootComponents.notice
-
-- Type: `NoticeOptions`
-
-  ```ts
-  interface NoticeActionOption {
-    /**
-     * Action text
-     */
-    text: string;
-    /**
-     * Action link
-     */
-    link?: string;
-    /**
-     * Action type
-     *
-     * @default 'default
-     */
-    type?: "primary" | "default";
-  }
-
-  interface NoticeItemOptions {
-    /**
-     * Notice title
-     */
-    title: string;
-
-    /**
-     * Notice content
-     */
-    content: string;
-
-    /**
-     * Notice key
-     *
-     * @description Used to identify and store the notice status
-     */
-    key?: string;
-
-    /**
-     * Whether show notice only once or show it in every visit
-     *
-     * @description If `key` is not provided, this option will be ignored
-     *
-     * @default false
-     */
-    showOnce?: boolean;
-
-    /**
-     * Whether the notice shall be confirmed
-     *
-     * @default false
-     */
-    confirm?: boolean;
-
-    /**
-     * Whether the notice should appear fullscreen
-     *
-     * @default false
-     */
-    fullscreen?: boolean;
-
-    /**
-     * Notice actions
-     */
-    actions?: NoticeActionOption[];
-  }
-
-  type NoticeOptions = NoticeItemOptions &
-    ({ path: string } | { match: RegExp });
-  ```
-
+- Type: `string`
 - Required: No
-- Details:
-  - [Guide → Notice](./guide/notice.md)
 
-Config for global notice.
+Twitter username.
 
 ## locales
 
 Component locales.
-
-### locales.backToTop
-
-- Type: `BackToTopLocaleConfig`
-
-  ```ts
-  interface BackToTopLocaleData {
-    /**
-     * Back to top button label text
-     */
-    backToTop: string;
-  }
-
-  interface BackToTopLocaleConfig {
-    [localePath: string]: BackToTopLocaleData;
-  }
-  ```
-
-- Required: No
-
-Locales config for BackToTop button.
 
 ### locales.pdf
 
@@ -277,13 +138,109 @@ Locales config for BackToTop button.
   }
 
   interface PDFLocaleConfig {
-    [localePath: string]: CatalogLocaleData;
+    [localePath: string]: PDFLocaleData;
   }
   ```
 
 - Required: No
 
 Locales config for pdf component.
+
+### locales.siteInfo
+
+- Type: `SiteInfoLocaleConfig`
+
+  ```ts
+  interface SiteInfoLocaleData {
+    /**
+     * Source text
+     *
+     * 源代码文字
+     */
+    source: string;
+  }
+
+  interface SiteInfoLocaleConfig {
+    [localePath: string]: SiteInfoLocaleData;
+  }
+  ```
+
+- Required: No
+
+Locales config for site info component.
+
+### locales.vidstack
+
+- Type: `VidstackLocaleConfig`
+
+  ```ts
+  interface VidstackLocaleData {
+    "Caption Styles": string;
+    "Captions look like this": string;
+    "Closed-Captions Off": string;
+    "Closed-Captions On": string;
+    "Display Background": string;
+    "Enter Fullscreen": string;
+    "Enter PiP": string;
+    "Exit Fullscreen": string;
+    "Exit PiP": string;
+    "Google Cast": string;
+    "Keyboard Animations": string;
+    "Seek Backward": string;
+    "Seek Forward": string;
+    "Skip To Live": string;
+    "Text Background": string;
+    Accessibility: string;
+    AirPlay: string;
+    Announcements: string;
+    Audio: string;
+    Auto: string;
+    Boost: string;
+    Captions: string;
+    Chapters: string;
+    Color: string;
+    Connected: string;
+    Connecting: string;
+    Continue: string;
+    Default: string;
+    Disabled: string;
+    Disconnected: string;
+    Download: string;
+    Family: string;
+    Font: string;
+    Fullscreen: string;
+    LIVE: string;
+    Loop: string;
+    Mute: string;
+    Normal: string;
+    Off: string;
+    Opacity: string;
+    Pause: string;
+    PiP: string;
+    Play: string;
+    Playback: string;
+    Quality: string;
+    Replay: string;
+    Reset: string;
+    Seek: string;
+    Settings: string;
+    Shadow: string;
+    Size: string;
+    Speed: string;
+    Text: string;
+    Track: string;
+    Unmute: string;
+    Volume: string;
+  }
+
+  interface VidstackLocaleConfig {
+    [localePath: string]: VidstackLocaleData;
+  }
+  ```
+
+- Required: No
+
+Locales config for vidstack component.
 
 ::: details Built-in Supported Languages
 

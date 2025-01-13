@@ -1,11 +1,6 @@
-import { type Plugin } from "@vuepress/core";
-import {
-  type ComponentOptions,
-  componentsPlugin,
-} from "vuepress-plugin-components";
-import { isString } from "vuepress-shared/node";
-
-import { type ThemeOptions } from "../../shared/index.js";
+import type { Plugin } from "vuepress/core";
+import type { ComponentPluginOptions } from "vuepress-plugin-components";
+import { componentsPlugin } from "vuepress-plugin-components";
 
 /**
  * @private
@@ -13,36 +8,18 @@ import { type ThemeOptions } from "../../shared/index.js";
  * Resolve options for vuepress-plugin-components
  */
 export const getComponentsPlugin = (
-  options: Pick<
-    ThemeOptions,
-    "backToTop" | "hostname" | "hotReload" | "iconAssets" | "iconPrefix"
-  >,
   {
-    components = ["Badge", "FontIcon"],
+    components = ["Badge"],
     componentOptions = {},
     rootComponents = {},
-  }: ComponentOptions = {},
-  legacy = false
+  }: ComponentPluginOptions = {},
+  legacy = false,
 ): Plugin =>
   componentsPlugin(
     {
-      // FontIcon component is used by theme so we MUST enable it
-      components: components.includes("FontIcon")
-        ? components
-        : ["FontIcon", ...components],
-      componentOptions: {
-        fontIcon: {
-          ...(options.iconAssets ? { assets: options.iconAssets } : {}),
-          ...(isString(options.iconPrefix)
-            ? { prefix: options.iconPrefix }
-            : {}),
-        },
-        ...componentOptions,
-      },
-      rootComponents: {
-        backToTop: options.backToTop ?? true,
-        ...rootComponents,
-      },
+      components,
+      componentOptions,
+      rootComponents,
     },
-    legacy
+    legacy,
   );

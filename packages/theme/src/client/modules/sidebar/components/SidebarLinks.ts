@@ -1,11 +1,12 @@
-import { type PropType, type VNode, defineComponent, h, ref, watch } from "vue";
-import { useRoute } from "vue-router";
+import type { PropType, VNode } from "vue";
+import { defineComponent, h, ref, watch } from "vue";
+import { useRoute } from "vuepress/client";
 
 import SidebarChild from "@theme-hope/modules/sidebar/components/SidebarChild";
 import SidebarGroup from "@theme-hope/modules/sidebar/components/SidebarGroup";
-import { isMatchedSidebarItem } from "@theme-hope/modules/sidebar/utils/index";
+import { isActiveSidebarItem } from "@theme-hope/modules/sidebar/utils/index";
 
-import { type ResolvedSidebarItem } from "../utils/index.js";
+import type { SidebarItem } from "../utils/index.js";
 
 import "../styles/sidebar-links.scss";
 
@@ -19,7 +20,7 @@ export default defineComponent({
      * 侧边栏链接配置
      */
     config: {
-      type: Array as PropType<ResolvedSidebarItem[]>,
+      type: Array as PropType<SidebarItem[]>,
       required: true,
     },
   },
@@ -36,30 +37,32 @@ export default defineComponent({
       () => route.path,
       (): void => {
         const index = props.config.findIndex((item) =>
-          isMatchedSidebarItem(route, item)
+          isActiveSidebarItem(route, item),
         );
 
         openGroupIndex.value = index;
       },
-      { immediate: true, flush: "post" }
+      { immediate: true, flush: "post" },
     );
 
     return (): VNode | null =>
       h(
         "ul",
-        { class: "sidebar-links" },
+        { class: "vp-sidebar-links" },
         props.config.map((config, index) =>
           h(
             "li",
-            config.type === "group"
+            "children" in config
               ? h(SidebarGroup, {
                   config,
                   open: index === openGroupIndex.value,
-                  onToggle: () => toggleGroup(index),
+                  onToggle: () => {
+                    toggleGroup(index);
+                  },
                 })
-              : h(SidebarChild, { config })
-          )
-        )
+              : h(SidebarChild, { config }),
+          ),
+        ),
       );
   },
 });

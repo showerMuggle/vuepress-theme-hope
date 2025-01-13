@@ -1,14 +1,13 @@
-import { usePageData, usePageFrontmatter } from "@vuepress/client";
+import { hasGlobalComponent } from "@vuepress/helper/client";
 import {
   useEventListener,
   useScrollLock,
   useThrottleFn,
   useToggle,
 } from "@vueuse/core";
+import type { ComponentOptions, SlotsType, VNode } from "vue";
 import {
-  type ComponentOptions,
   Transition,
-  type VNode,
   computed,
   defineComponent,
   h,
@@ -18,11 +17,13 @@ import {
   resolveComponent,
   watch,
 } from "vue";
-import { useRouter } from "vue-router";
-import { RenderDefault, hasGlobalComponent } from "vuepress-shared/client";
+import { usePageFrontmatter, useRouter } from "vuepress/client";
+import { RenderDefault } from "vuepress-shared/client";
 
 import PageFooter from "@theme-hope/components/PageFooter";
 import {
+  usePure,
+  useThemeData,
   useThemeLocaleData,
   useWindowSize,
 } from "@theme-hope/composables/index";
@@ -30,17 +31,24 @@ import Navbar from "@theme-hope/modules/navbar/components/Navbar";
 import Sidebar from "@theme-hope/modules/sidebar/components/Sidebar";
 import { useSidebarItems } from "@theme-hope/modules/sidebar/composables/index";
 
-import {
-  type ThemeNormalPageFrontmatter,
-  type ThemeProjectHomePageFrontmatter,
+import type {
+  ThemeNormalPageFrontmatter,
+  ThemeProjectHomePageFrontmatter,
 } from "../../shared/index.js";
 
-import "../styles/common.scss";
+import "../styles/common-wrapper.scss";
 
 export default defineComponent({
   name: "CommonWrapper",
 
   props: {
+    /**
+     * Extra class of container
+     *
+     * 容器额外类名
+     */
+    containerClass: { type: String, default: "" },
+
     /**
      * Whether disable navbar
      *
@@ -54,23 +62,42 @@ export default defineComponent({
      * 是否禁用侧边栏
      */
     noSidebar: Boolean,
+
+    /**
+     * Whether disable toc
+     */
+    noToc: Boolean,
   },
+
+  slots: Object as SlotsType<{
+    default: () => VNode[] | VNode | null;
+
+    // Nav Screen
+    navScreenTop?: () => VNode[] | VNode | null;
+    navScreenBottom?: () => VNode[] | VNode | null;
+
+    // Sidebar
+    sidebar?: () => VNode[] | VNode;
+    sidebarTop?: () => VNode[] | VNode | null;
+    sidebarBottom?: () => VNode[] | VNode | null;
+  }>,
 
   setup(props, { slots }) {
     const router = useRouter();
-    const page = usePageData();
     const frontmatter = usePageFrontmatter<
       ThemeProjectHomePageFrontmatter | ThemeNormalPageFrontmatter
     >();
+    const themeData = useThemeData();
     const themeLocale = useThemeLocaleData();
     const { isMobile, isPC } = useWindowSize();
+    const isPure = usePure();
 
     const [isMobileSidebarOpen, toggleMobileSidebar] = useToggle(false);
     const [isDesktopSidebarCollapsed, toggleDesktopSidebar] = useToggle(false);
 
     const sidebarItems = useSidebarItems();
 
-    // navbar
+    // Navbar
     const hideNavbar = ref(false);
 
     const enableNavbar = computed(() => {
@@ -83,10 +110,9 @@ export default defineComponent({
         return false;
 
       return Boolean(
-        page.value.title ||
-          themeLocale.value.logo ||
-          themeLocale.value.repo ||
-          themeLocale.value.navbar
+        themeLocale.value.logo ??
+          themeLocale.value.repo ??
+          themeLocale.value.navbar,
       );
     });
 
@@ -100,6 +126,21 @@ export default defineComponent({
       );
     });
 
+    // external-link-icon
+    const enableExternalLinkIcon = computed(
+      () =>
+        frontmatter.value.externalLinkIcon ??
+        themeData.value.externalLinkIcon ??
+        true,
+    );
+
+    const enableToc = computed(
+      () =>
+        !props.noToc &&
+        !frontmatter.value.home &&
+        (frontmatter.value.toc ?? themeLocale.value.toc ?? true),
+    );
+
     const touchStart = { x: 0, y: 0 };
     const onTouchStart = (e: TouchEvent): void => {
       touchStart.x = e.changedTouches[0].clientX;
@@ -110,7 +151,7 @@ export default defineComponent({
       const dy = e.changedTouches[0].clientY - touchStart.y;
 
       if (
-        // horizontal swipe
+        // Horizontal swipe
         Math.abs(dx) > Math.abs(dy) * 1.5 &&
         Math.abs(dx) > 40
       )
@@ -118,41 +159,27 @@ export default defineComponent({
         else toggleMobileSidebar(false);
     };
 
-    const enableToc = computed(() =>
-      frontmatter.value.home
-        ? false
-        : frontmatter.value.toc ||
-          (themeLocale.value.toc !== false && frontmatter.value.toc !== false)
-    );
-
-    /** Get scroll distance */
-    const getScrollTop = (): number =>
-      window.pageYOffset ||
-      document.documentElement.scrollTop ||
-      document.body.scrollTop ||
-      0;
-
-    // close sidebar after navigation
+    // Close sidebar after navigation
     let lastDistance = 0;
 
     useEventListener(
       "scroll",
       useThrottleFn(
         () => {
-          const distance = getScrollTop();
+          const distance = window.scrollY;
 
-          // at top or scroll up
+          // At top or scroll up
           if (distance <= 58 || distance < lastDistance)
             hideNavbar.value = false;
-          // scroll down > 200px and sidebar is not opened
+          // Scroll down > 200px and sidebar is not opened
           else if (lastDistance + 200 < distance && !isMobileSidebarOpen.value)
             hideNavbar.value = true;
 
           lastDistance = distance;
         },
         300,
-        true
-      )
+        true,
+      ),
     );
 
     watch(isMobile, (value) => {
@@ -179,7 +206,7 @@ export default defineComponent({
     return (): VNode =>
       h(
         hasGlobalComponent("GlobalEncrypt")
-          ? <ComponentOptions>resolveComponent("GlobalEncrypt")
+          ? (resolveComponent("GlobalEncrypt") as ComponentOptions)
           : RenderDefault,
         () =>
           h(
@@ -187,57 +214,62 @@ export default defineComponent({
             {
               class: [
                 "theme-container",
-                // classes
+                // Classes
                 {
-                  "no-navbar": !enableNavbar.value,
-                  "no-sidebar":
-                    !enableSidebar.value &&
-                    !(
-                      slots["sidebar"] ||
-                      slots["sidebarTop"] ||
-                      slots["sidebarBottom"]
-                    ),
-                  "has-toc": enableToc.value,
+                  // navbar
                   "hide-navbar": hideNavbar.value,
+                  "no-navbar": !enableNavbar.value,
+
+                  // sidebar
                   "sidebar-collapsed":
                     !isMobile.value &&
                     !isPC.value &&
                     isDesktopSidebarCollapsed.value,
                   "sidebar-open": isMobile.value && isMobileSidebarOpen.value,
+                  "no-sidebar":
+                    !enableSidebar.value &&
+                    !slots.sidebar &&
+                    !slots.sidebarTop &&
+                    !slots.sidebarBottom,
+
+                  // external-link-icon
+                  "external-link-icon": enableExternalLinkIcon.value,
+
+                  // pure
+                  pure: isPure.value,
+
+                  // toc
+                  "has-toc": enableToc.value,
                 },
-                frontmatter.value.containerClass || "",
+                props.containerClass,
+                frontmatter.value.containerClass ?? "",
               ],
+              "vp-container": "",
               onTouchStart,
               onTouchEnd,
             },
             [
-              // navbar
+              // Navbar
               enableNavbar.value
                 ? h(
                     Navbar,
                     { onToggleSidebar: () => toggleMobileSidebar() },
                     {
-                      startBefore: () => slots["navbarStartBefore"]?.(),
-                      startAfter: () => slots["navbarStartAfter"]?.(),
-                      centerBefore: () => slots["navbarCenterBefore"]?.(),
-                      centerAfter: () => slots["navbarCenterAfter"]?.(),
-                      endBefore: () => slots["navbarEndBefore"]?.(),
-                      endAfter: () => slots["navbarEndAfter"]?.(),
-                      screenTop: () => slots["navScreenTop"]?.(),
-                      screenBottom: () => slots["navScreenBottom"]?.(),
-                    }
+                      screenTop: slots.navScreenTop,
+                      screenBottom: slots.navScreenBottom,
+                    },
                   )
                 : null,
-              // sidebar mask
+              // Sidebar mask
               h(Transition, { name: "fade" }, () =>
                 isMobileSidebarOpen.value
                   ? h("div", {
-                      class: "sidebar-mask",
+                      class: "vp-sidebar-mask",
                       onClick: () => toggleMobileSidebar(false),
                     })
-                  : null
+                  : null,
               ),
-              // toggle sidebar button
+              // Toggle sidebar button
               h(Transition, { name: "fade" }, () =>
                 isMobile.value
                   ? null
@@ -252,28 +284,23 @@ export default defineComponent({
                           "arrow",
                           isDesktopSidebarCollapsed.value ? "end" : "start",
                         ],
-                      })
-                    )
+                      }),
+                    ),
               ),
-              // sidebar
+              // Sidebar
               h(
                 Sidebar,
                 {},
                 {
-                  ...(slots["sidebar"]
-                    ? {
-                        default: (): VNode[] | undefined =>
-                          slots["sidebar"]?.(),
-                      }
-                    : {}),
-                  top: () => slots["sidebarTop"]?.(),
-                  bottom: () => slots["sidebarBottom"]?.(),
-                }
+                  default: slots.sidebar,
+                  top: slots.sidebarTop,
+                  bottom: slots.sidebarBottom,
+                },
               ),
-              slots["default"]?.(),
+              slots.default(),
               h(PageFooter),
-            ]
-          )
+            ],
+          ),
       );
   },
 });

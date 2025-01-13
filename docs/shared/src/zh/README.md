@@ -2,11 +2,10 @@
 home: true
 title: 主页
 icon: home
-heroImage: /logo.svg
 heroText: vuepress-shared
 tagline: VuePress2 的强大工具函数
 
-footer: 使用 <a href="https://theme-hope.vuejs.press/zh/" target="_blank">VuePress Theme Hope</a> 主题 | MIT 协议, 版权所有 © 2019-present Mr.Hope
+footer: 使用 <a href="https://theme-hope.vuejs.press/zh/" target="_blank">VuePress Theme Hope</a> 主题 | MIT 协议, 版权所有 © 2019-至今 Mr.Hope
 
 copyright: false
 ---
@@ -47,9 +46,3 @@ VuePress 同时运行在 Node.js 端和浏览器端，我们称之为 `node` 和
 
 - 在 Node 端，你应该从 `vuepress-shared/node` 导入函数。
 - 在客户端，你应该从 `vuepress-shared/client` 导入函数。
-
-<NetlifyBadge alt="通过 Netlify 部署" />
-
-<script setup lang="ts">
-import NetlifyBadge from "@NetlifyBadge";
-</script>

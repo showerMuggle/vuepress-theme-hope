@@ -1,5 +1,5 @@
 ---
-title: V2 Migration
+title: Migration to Latest
 icon: code-compare
 ---
 
@@ -9,19 +9,9 @@ You can pass the second argument `true` to enable legacy mode when calling `mdEn
 
 ## New Features
 
-- Markdown link check
-
-  The plugin now check your Markdown links and warn you when broken links are detected.
-
-  You can control this behavior with `linkCheck` option
-
-- image mark support
-
-  Use `#light` and `#dark` suffix to mark images to display them in light mode or dark mode via `imgMark` option.
-
 - `v-pre` support
 
-  The following container support is removed from `@vuepress/core`, so `vPre` option is added
+  The following container support is removed, so `vPre` option is added
 
   ```md
   ::: v-pre
@@ -31,12 +21,14 @@ You can pass the second argument `true` to enable legacy mode when calling `mdEn
   :::
   ```
 
+- Use `component` code block to add components easily
+
 - Chart.js support
 
   Adds [chart.js](https://www.chartjs.org/docs/latest/) support via `chart` option
 
   ````md
-  ::: chart Title
+  ::: chartjs Title
 
   ```json
   {
@@ -46,7 +38,7 @@ You can pass the second argument `true` to enable legacy mode when calling `mdEn
 
   :::
 
-  ::: chart Title
+  ::: chartjs Title
 
   ```js
   const config = {
@@ -99,13 +91,23 @@ You can pass the second argument `true` to enable legacy mode when calling `mdEn
 
   - `<!-- @include: filename#region -->`
 
-- tabs support
+- markmap support
 
-  Use `tabs` container to create tabs via `tabs` option.
+  Add `markmap` container to create [Markmap](https://markmap.js.org/) via `markmap` option.
+
+- Playground
+
+  Embed interactive demo with official presets and custom options
+
+- Kotlin Playground
+
+  Provide Kotlin playground via `kotlin-playground`
+
+- Vue Playground
+
+  Provide Vue playground via `@vue/repl`
 
 ## Changed
-
-- renamed `codegroup` to `codetabs`
 
 - Now all options are disabled by default
 
@@ -155,52 +157,6 @@ You can pass the second argument `true` to enable legacy mode when calling `mdEn
   :::
   ```
 
-- Code Group changed to code tab
-
-  Before:
-
-  ````md
-  :::: code-group
-
-  ::: code-group-item pnpm
-
-  ```bash
-  pnpm create vuepress-theme-hope [dir]
-  ```
-
-  :::
-
-  ::: code-group-item npm:active
-
-  ```bash
-  npm init vuepress-theme-hope [dir]
-  ```
-
-  :::
-
-  ::::
-  ````
-
-  After:
-
-  ````md
-  ::: code-tabs
-
-  @tab pnpm
-
-  ```bash
-  pnpm create vuepress-theme-hope [dir]
-  ```
-
-  @tab:active npm
-
-  ```bash
-  npm init vuepress-theme-hope [dir]
-  ```
-
-  :::
-  ````
-
 ## Removed Options
 
 - `enableAll` removed
@@ -214,3 +170,53 @@ You can pass the second argument `true` to enable legacy mode when calling `mdEn
 - `imageFix` removed
 
   Mr.Hope already made a PR to fix broken image links in Markdown, so it's no longer needed
+
+- `alert` removed
+
+  Please use `@vuepress/plugin-markdown-hint` instead
+
+- `container`, `hint` removed
+
+  Please use `@vuepress/plugin-markdown-hint` instead
+
+- `imageLazyload`, `lazyload` `imgLazyload` removed
+
+  Please use `@vuepress/plugin-markdown-image` instead
+
+- `imageTitle`, `figure` removed
+
+  Please use `@vuepress/plugin-markdown-image` instead
+
+- `imageMark`, `imgMark` removed
+
+  Please use `@vuepress/plugin-markdown-image` instead
+
+- `imgSize`, `imageSize` removed
+
+  Please use `@vuepress/plugin-markdown-image` instead
+
+- `tex`, `katex`, `mathjax` removed
+
+  Please use `@vuepress/plugin-markdown-math` instead
+
+- `codegroup`, `codetabs` removed
+
+  Please use `@vuepress/plugin-markdown-tab` instead
+
+- `tabs` removed
+
+  Please use `@vuepress/plugin-markdown-tab` instead
+
+- `presentation` `revealJs` `revealjs` removed
+
+  Please use `@vuepress/plugin-revealjs` instead
+
+## Options Adjustments in Pre-release Version
+
+- `mdImport` is renamed to `include`
+
+- `vpre` is renamed to `vPre`
+
+- `card` is replaced by `components`
+
+- `mermaid` `vuePlayground` no longer accept lib options

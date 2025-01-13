@@ -9,7 +9,7 @@ tag:
   - 文章
   - 加密
   - 幻灯片
-  - 收藏
+  - 星标
 ---
 
 主题默认在 `/article/` 路径下为你提供了全部的文章列表。
@@ -51,7 +51,7 @@ tag:
 
 出于性能考虑，默认情况下开发服务器中不提供自动摘录生成功能，请使用 [hotReload](../../config/theme/basic.md#hotreload) 启用它。
 
-我们推荐你优先使用 `<!-- more -->` 来标记摘要。如果你的确需要一个特别的摘要的话，请自己设置在 Front Matter。
+我们推荐你优先使用 `<!-- more -->` 来标记摘要。如果你的确需要一个特别的摘要的话，请自己设置在 frontmatter。
 
 对于使用注释标记的摘要，我们会从原始文件分离出的摘要内容并将它们渲染成 HTMLString，所以在摘要外的内容**不会参与摘要渲染**，相关限制如:
 
@@ -62,19 +62,19 @@ tag:
 
 :::
 
-## 收藏文章
+## 星标文章
 
-你可以通过在 frontmatter 中设置 `star` 为 `true` 收藏一个文章。收藏后，用户就可以在 `/star/` 页面中查看这些文章。
+你可以通过在 frontmatter 中设置 `star` 为 `true` 星标一个文章。星标后，用户就可以在 `/star/` 页面中查看这些文章。
 
-同时任何任何收藏的文章都会显示在博客主页侧边栏的文章栏目中。
+同时任何任何星标的文章都会显示在博客主页侧边栏的文章栏目中。
 
 ::: info
 
-我们提供收藏选项的考虑是: 主题使用者可能希望向访客展示一定数量的精品文章，而又不希望置顶文章充斥主页，导致用户不能看到最近更新的文章。
+我们提供星标选项的考虑是: 主题使用者可能希望向访客展示一定数量的精品文章，而又不希望置顶文章充斥主页，导致用户不能看到最近更新的文章。
 
 :::
 
-::: tip 收藏顺序
+::: tip 星标顺序
 
 类似置顶文章，你同样可以将 `star` 设置为 `number` 来设置它们的顺序。数值大的文章会排列在前面。
 
@@ -100,7 +100,10 @@ tag:
 
 :::
 
-你还需要在主题语言环境中使用实际类型名称设置 `blogLocales[key]`，以便主题可以正确显示类型名称。
+为了让主题正确显示类型名称，你需要：
+
+- 或者在主题多语言选项中设置 `blogLocales[key]` 为实际类型名称，
+- 或者在布局页面的 frontmatter 中设置 `title`。
 
 为了方便上手，我们在这里展示一些示例。
 
@@ -108,16 +111,15 @@ tag:
 
 1. 增加了一种幻灯片页面。
 
-   所有幻灯片页面都应在 frontmatter 中包含 `layout: Slide`。 并且顺序无关紧要。
+   所有幻灯片页面都应在 frontmatter 中包含 `layout: SlidePage`。 并且顺序无关紧要。
 
 1. 添加原创类型。
 
 你应设置以下选项：
 
 ```ts
+import { compareDate } from "@vuepress/helper";
 import { defineUserConfig } from "vuepress";
-// 你可能需要安装 vuepress-shared 来使用它的 `compareDate`
-import { compareDate } from "vuepress-shared/node";
 import { hopeTheme } from "vuepress-theme-hope";
 
 export default defineUserConfig({

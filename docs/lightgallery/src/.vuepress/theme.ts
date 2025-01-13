@@ -1,5 +1,6 @@
 import { theme } from "docs-shared";
 
+// The theme wrapper is located in <root>/docs-shared/src/theme-wrapper.ts
 export default theme("lightgallery", {
   locales: {
     "/": {
@@ -15,11 +16,12 @@ export default theme("lightgallery", {
     },
   },
 
-  plugins: {
-    mdEnhance: {
-      codetabs: true,
-    },
+  markdown: {
+    codeTabs: true,
+    imgMark: true,
+  },
 
+  plugins: {
     photoSwipe: false,
   },
 });

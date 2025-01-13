@@ -26,12 +26,6 @@ If you don't set those options, they automatically fall back to the site logo (`
 
 :::
 
-::: tip
-
-If you want the avatar to be clipped with round shape, set `blog.roundAvatar: true`.
-
-:::
-
 ## Motto, Social Media & Profile Link
 
 You can use `blog.description` to set your own introduction, motto or slogan.
@@ -45,90 +39,118 @@ You can also config your social media links with `blog.medias` option.
 
   The second element in the tuple must be a valid SVG string or a full path of an existing SVG file.
 
-::: tip Available social media:
+:::: tip Available social media:
 
-- `"Baidu"`
-- `"BiliBili"`
-- `"Bitbucket"`
-- `"Dingding"`
+::: tabs
+
+@tab Social
+
+- `"CoolApk"`
 - `"Discord"`
 - `"Douban"`
+- `"Facebook"`
+- `"Instagram"`
+- `"Kook"`
+- `"Line"`
+- `"Messenger"`
+- `"QQ"`
+- `"Qzone"`
+- `"Reddit"`
+- `"Skype"`
+- `"SnapChat"`
+- `"Soul"`
+- `"Telegram"`
+- `"Tieba"`
+- `"Tumblr"`
+- `"Twitter"`
+- `"VK"`
+- `"Wechat"`
+- `"Weibo"`
+- `"Whatsapp"`
+- `"YY"`
+
+@tab Work
+
+- `"Bitbucket"`
+- `"Dingding"`
 - `"Dribbble"`
 - `"Email"`
 - `"Evernote"`
-- `"Facebook"`
-- `"Flipboard"`
 - `"Gitee"`
 - `"GitHub"`
 - `"Gitlab"`
 - `"Gmail"`
-- `"Instagram"`
+- `"KDocs"`
 - `"Lark"`
-- `"Line"`
 - `"Linkedin"`
-- `"Pinterest"`
 - `"Pocket"`
-- `"QQ"`
-- `"Qzone"`
-- `"Reddit"`
+- `"QQDocs"`
+- `"WechatWork"`
+
+@tab Integrate
+
+- `"AFDian"`
+- `"Baidu"`
+- `"Bangumi"`
+- `"DuiTang"`
+- `"Flipboard"`
+- `"HuaBan"`
+- `"Pinterest"`
+- `"Pixiv"`
 - `"Rss"`
-- `"Steam"`
-- `"Skype"`
-- `"Telegram"`
-- `"Twitter"`
-- `"Wechat"`
-- `"Weibo"`
-- `"Whatsapp"`
-- `"Youtube"`
+- `"WechatMP"`
+- `"XiaoHongShu"`
 - `"Zhihu"`
+
+@tab Music
+
+- `"163Music"`
+- `"5Sing"`
+- `"Kugou"`
+- `"Kuwo"`
+- `"QQMusic"`
+- `"SoundCloud"`
+- `"XiMaLaYa"`
+
+@tab Video
+
+- `"AcFun"`
+- `"BiliBili"`
+- `"Douyin"`
+- `"Douyu"`
+- `"HuoShan"`
+- `"HuYa"`
+- `"iQiYi"`
+- `"KuaiShou"`
+- `"Nico"`
+- `"QQVideo"`
+- `"Twitch"`
+- `"WechatCh"`
+- `"Weishi"`
+- `"Youku"`
+- `"Youtube"`
+
+@tab Other
+
+- `"115"`
+- `"360Yun"`
+- `"AliDrive"`
+- `"AliPay"`
+- `"BaiduDisk"`
+- `"BattleNET"`
+- `"IdleFish"`
+- `"Paypal"`
+- `"Steam"`
+- `"WechatPay"`
 
 :::
 
-:::: details Example
+::::
 
-::: code-tabs#language
+::: details Example
 
-@tab TS
-
-```ts
-// .vuepress/config.ts
-import { getDirname, path } from "@vuepress/utils";
-import { defineUserConfig } from "vuepress";
-import { hopeTheme } from "vuepress-theme-hope";
-
-const __dirname = getDirname(import.meta.url);
-
-export default defineUserConfig({
-  theme: hopeTheme({
-    blog: {
-      medias: {
-        // GitHub Icon is available
-        GitHub: "https://github.com/Mister-Hope",
-        // A custom Media called "MediaX" (just an example)
-        MediaX: [
-          // link
-          "https://mediax.com/UserX/",
-          // icon string
-          "<svg ....</svg>",
-        ],
-        // A custom Media called "MediaY" (just an example)
-        MediaY: [
-          // link
-          "https://mediay.com/UserY/",
-          // icon path
-          path.resolve(__dirname, "icons/mediay.svg"),
-        ],
-      },
-    },
-  }),
-});
-```
-
-@tab JS
-
-```js
-// .vuepress/config.js
-import { getDirname, path } from "@vuepress/utils";
+```js title=".vuepress/config.js"
+import { getDirname, path } from "vuepress/utils";
 import { hopeTheme } from "vuepress-theme-hope";
 
 const __dirname = getDirname(import.meta.url);
@@ -140,19 +162,19 @@ export default {
         // GitHub Icon is available
         GitHub: "https://github.com/Mister-Hope",
         // A custom Media called "MediaX" (just an example)
-        MediaX: [
-          // link
-          "https://mediax.com/UserX/",
+        MediaX: {
           // icon string
-          "<svg ....</svg>",
-        ],
-        // A custom Media called "MediaY" (just an example)
-        MediaY: [
+          icon: "<svg ....</svg>",
           // link
-          "https://mediay.com/UserY/",
+          link: "https://mediax.com/UserX/",
+        },
+        // A custom Media called "MediaY" (just an example)
+        MediaY: {
           // icon path
-          path.resolve(__dirname, "icons/mediay.svg"),
-        ],
+          icon: "https://mediay.com/logo.svg",
+          // link
+          link: "https://mediay.com/UserY/",
+        },
       },
     },
   }),
@@ -160,5 +182,3 @@ export default {
 ```
 
 :::
-
-::::

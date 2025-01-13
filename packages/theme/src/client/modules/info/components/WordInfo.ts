@@ -1,9 +1,11 @@
-import { type PropType, type VNode, defineComponent, h } from "vue";
-import {
-  type ReadingTime,
-  type ReadingTimeLocale,
-} from "vuepress-plugin-reading-time2/client";
+import type {
+  ReadingTime,
+  ReadingTimeLocale,
+} from "@vuepress/plugin-reading-time/client";
+import type { PropType, VNode } from "vue";
+import { defineComponent, h } from "vue";
 
+import { usePure } from "@theme-hope/composables/index";
 import { WordIcon } from "@theme-hope/modules/info/components/icons";
 import { useMetaLocale } from "@theme-hope/modules/info/composables/index";
 
@@ -32,17 +34,11 @@ export default defineComponent({
       type: Object as PropType<ReadingTimeLocale | null>,
       default: () => null,
     },
-
-    /**
-     * Whether in pure mode
-     *
-     * 是否处于纯净模式
-     */
-    pure: Boolean,
   },
 
   setup(props) {
     const metaLocale = useMetaLocale();
+    const isPure = usePure();
 
     return (): VNode | null =>
       props.readingTimeLocale?.words
@@ -51,18 +47,18 @@ export default defineComponent({
             {
               class: "page-word-info",
               "aria-label": `${metaLocale.value.words}${
-                props.pure ? "" : "🔠"
+                isPure.value ? "" : "🔠"
               }`,
-              ...(props.pure ? {} : { "data-balloon-pos": "down" }),
+              ...(isPure.value ? {} : { "data-balloon-pos": "up" }),
             },
             [
               h(WordIcon),
-              h("span", props.readingTimeLocale?.words),
+              h("span", props.readingTimeLocale.words),
               h("meta", {
                 property: "wordCount",
                 content: props.readingTime?.words,
               }),
-            ]
+            ],
           )
         : null;
   },

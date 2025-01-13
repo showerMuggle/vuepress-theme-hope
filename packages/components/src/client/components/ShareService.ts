@@ -1,37 +1,35 @@
 /* eslint-disable vue/require-default-prop */
-import { usePageData, usePageFrontmatter } from "@vuepress/client";
-import { isArray, isLinkHttp, isString } from "@vuepress/shared";
 import {
-  type PropType,
-  type VNode,
-  defineComponent,
-  h,
-  onMounted,
-  ref,
-} from "vue";
-import {
-  Popup,
   endsWith,
-  isAbsoluteUrl,
-  openPopupWindow,
+  isArray,
+  isLinkAbsolute,
+  isLinkHttp,
+  isString,
   startsWith,
-} from "vuepress-shared/client";
+} from "@vuepress/helper/client";
+import type { PropType, VNode } from "vue";
+import { defineComponent, h, onMounted, ref } from "vue";
+import { usePageData, usePageFrontmatter } from "vuepress/client";
+import { Popup, openPopupWindow } from "vuepress-shared/client";
 
-import { type ShareServiceOptions } from "../../shared/share.js";
+import type { ShareServiceOptions } from "../../shared/share.js";
 import { getMetaContent } from "../utils/index.js";
 
 import "balloon-css/balloon.css";
 import "vuepress-shared/client/styles/popup.scss";
 import "../styles/share-service.scss";
 
-declare const SHARE_CONTENT_SELECTOR: string;
-
 const renderIcon = (content: string, contentClass = ""): VNode => {
-  const className = ["share-icon", contentClass];
+  const className = ["vp-share-icon", contentClass];
 
   // is a link
-  if (isLinkHttp(content) || isAbsoluteUrl(content))
-    return h("img", { class: className, src: content, "no-view": "" });
+  if (isLinkHttp(content) || isLinkAbsolute(content))
+    return h("img", {
+      class: className,
+      src: content,
+      loading: "lazy",
+      "no-view": "",
+    });
 
   // is html content
   if (startsWith(content, "<") && endsWith(content, ">"))
@@ -56,7 +54,7 @@ export default defineComponent({
     },
 
     /**
-     * is plain
+     * Whether use plain icon
      */
     plain: Boolean,
 
@@ -125,22 +123,19 @@ export default defineComponent({
         getMetaContent("og:description") ??
         getMetaContent("twitter:description");
       const url =
-        props.url ?? typeof window === "undefined"
+        (props.url ?? typeof window === "undefined")
           ? null
           : window.location.href;
       const cover = props.cover ?? getMetaContent("og:image");
       const image = document
-        .querySelector<HTMLImageElement>(
-          `${SHARE_CONTENT_SELECTOR} :not(a) > img`
-        )
+        .querySelector<HTMLImageElement>("[vp-content] :not(a) > img")
         ?.getAttribute("src");
-      const tags =
-        props.tag ?? frontmatter.value["tag"] ?? frontmatter.value["tags"];
+      const tags = props.tag ?? frontmatter.value.tag ?? frontmatter.value.tags;
       const tag = isArray(tags)
         ? tags.filter(isString).join(",")
         : isString(tags)
-        ? tags
-        : null;
+          ? tags
+          : null;
 
       return props.config.link.replace(
         /\[([^\]]+)\]/g,
@@ -158,7 +153,7 @@ export default defineComponent({
           }
 
           return "";
-        }
+        },
       );
     };
 
@@ -182,11 +177,11 @@ export default defineComponent({
                 width: 250,
                 scale: 1,
                 margin: 1.5,
-              })
+              }),
             )
             .then((dataURL) => {
               popup.emit(
-                `<img src="${dataURL}" alt="qrcode" class="share-qrcode" />`
+                `<img src="${dataURL}" alt="qrcode" class="share-qrcode" />`,
               );
             });
           break;
@@ -212,22 +207,24 @@ export default defineComponent({
           "button",
           {
             type: "button",
-            class: ["share-button", { plain }],
+            class: ["vp-share-button", { plain }],
             "aria-label": name,
             "data-balloon-pos": "up",
-            onClick: () => share(),
+            onClick: () => {
+              share();
+            },
           },
           plain
             ? renderIcon(shape, "plain")
             : icon
-            ? renderIcon(icon)
-            : h("div", {
-                class: "share-icon color-wrapper",
-                style: {
-                  background: color,
-                },
-                innerHTML: shape,
-              })
+              ? renderIcon(icon)
+              : h("div", {
+                  class: "vp-share-icon colorful",
+                  style: {
+                    background: color,
+                  },
+                  innerHTML: shape,
+                }),
         ),
         showPopup.value ? h("div", { class: "share-popup" }) : null,
       ];

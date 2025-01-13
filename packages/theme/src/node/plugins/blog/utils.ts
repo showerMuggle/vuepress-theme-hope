@@ -1,25 +1,25 @@
-import { type Page } from "@vuepress/core";
-import { type GitData } from "@vuepress/plugin-git";
-import { compareDate } from "vuepress-shared/node";
+import { dateSorter } from "@vuepress/helper";
+import type { GitData } from "@vuepress/plugin-git";
+import type { Page } from "vuepress/core";
 
-import {
-  type ArticleInfo,
-  ArticleInfoType,
-  type ThemeNormalPageFrontmatter,
+import type {
+  ArticleInfoData,
+  ThemeNormalPageFrontmatter,
 } from "../../../shared/index.js";
+import { ArticleInfo } from "../../../shared/index.js";
 
 /** @private */
 export const defaultPageSorter = (
   pageA: Page<
     { git: GitData },
     ThemeNormalPageFrontmatter,
-    { routeMeta: ArticleInfo }
+    { routeMeta: ArticleInfoData }
   >,
   pageB: Page<
     { git: GitData },
     ThemeNormalPageFrontmatter,
-    { routeMeta: ArticleInfo }
-  >
+    { routeMeta: ArticleInfoData }
+  >,
 ): number => {
   const prevKey = pageA.frontmatter.sticky;
   const nextKey = pageB.frontmatter.sticky;
@@ -29,8 +29,8 @@ export const defaultPageSorter = (
   if (prevKey && !nextKey) return -1;
   if (!prevKey && nextKey) return 1;
 
-  return compareDate(
-    pageA.routeMeta[ArticleInfoType.date],
-    pageB.routeMeta[ArticleInfoType.date]
+  return dateSorter(
+    pageA.routeMeta[ArticleInfo.date],
+    pageB.routeMeta[ArticleInfo.date],
   );
 };

@@ -8,118 +8,9 @@ tag:
   - Search
 ---
 
-The theme adds built-in support for <ProjectLink name="search-pro">`vuepress-plugin-search-pro`</ProjectLink>, [`@vuepress/plugin-docsearch`][docsearch] and [`@vuepress/plugin-search`][search]. Just install the plugin you want and config it, you will get a search box in navbar.
-
-To use search plugin, you need to apply it via `plugins` in the [**VuePress config file**](../../cookbook/vuepress/config.md).
-
-::: warning
-
-The theme is just adding support for the above plugins, it does not bundle them. You need to install and apply them yourself.
-
-:::
-
-::: danger
-
-**DO NOT** use `plugins.search` in theme options.
-
-The theme can ONLY apply plugins it bundles, so `plugins` field in theme options ONLY accepts CERTAIN plugin name.
-
-:::
+The theme adds built-in support for [`@vuepress/plugin-docsearch`][docsearch], [@vuepress/plugin-slimsearch][slimsearch] and [`@vuepress/plugin-search`][search]. Just install the plugin you want and config it, you will get a search box in navbar.
 
 <!-- more -->
-
-## Use `vuepress-plugin-search-pro`
-
-1. Install `vuepress-plugin-search-pro`
-
-   ::: code-tabs#shell
-
-   @tab pnpm
-
-   ```bash
-   pnpm add -D vuepress-plugin-search-pro
-   ```
-
-   @tab yarn
-
-   ```bash
-   yarn add -D vuepress-plugin-search-pro
-   ```
-
-   @tab npm
-
-   ```bash
-   npm i -D vuepress-plugin-search-pro
-   ```
-
-   :::
-
-1. Import `searchProPlugin` from `vuepress-plugin-search-pro` and apply it in `plugins` under `config.{ts,js}`.
-
-   ::: code-tabs#language
-
-   @tab TS
-
-   ```ts
-   // .vuepress/config.ts
-   import { defineUserConfig } from "vuepress";
-   import { searchProPlugin } from "vuepress-plugin-search-pro";
-
-   export default defineUserConfig({
-     plugins: [
-       searchProPlugin({
-         // index all contents
-         indexContent: true,
-         // add supports for category and tags
-         customFields: [
-           {
-             getter: (page) => page.frontmatter.category,
-             formatter: "Category: $content",
-           },
-           {
-             getter: (page) => page.frontmatter.tag,
-             formatter: "Tag: $content",
-           },
-         ],
-       }),
-     ],
-   });
-   ```
-
-   @tab JS
-
-   ```js
-   // .vuepress/config.js
-   import { searchProPlugin } from "vuepress-plugin-search-pro";
-
-   export default {
-     plugins: [
-       searchProPlugin({
-         // index all contents
-         indexContent: true,
-         // add supports for category and tags
-         customFields: [
-           {
-             getter: (page) => page.frontmatter.category,
-             formatter: "Category: $content",
-           },
-           {
-             getter: (page) => page.frontmatter.tag,
-             formatter: "Tag: $content",
-           },
-         ],
-       }),
-     ],
-   };
-   ```
-
-   :::
-
-::: info More
-
-See <ProjectLink name="search-pro">Plugin Docs</ProjectLink> for available options.
-
-:::
 
 ## Use `@vuepress/plugin-docsearch`
 
@@ -147,7 +38,7 @@ See <ProjectLink name="search-pro">Plugin Docs</ProjectLink> for available optio
        "https://YOUR_WEBSITE_URL/",
      ],
      sitemaps: [
-       // if you are using sitemap plugins (e.g.: vuepress-plugin-sitemap2), you may provide one
+       // if you are using sitemap plugins (e.g.: @vuepress/plugin-sitemap), you may provide one
        "https://YOUR_WEBSITE_URL/sitemap.xml",
      ],
      ignoreCanonicalTo: false,
@@ -170,22 +61,21 @@ See <ProjectLink name="search-pro">Plugin Docs</ProjectLink> for available optio
          // controls how algolia extracts records from your site
          recordExtractor: ({ $, helpers }) => {
            // The following are the default options for vuepress-theme-hope
-           // vuepress-theme-hope default container class name is theme-hope-content
            return helpers.docsearch({
              recordProps: {
                lvl0: {
-                 selectors: ".sidebar-heading.active",
+                 selectors: [".vp-sidebar-link.active", "[vp-content] h1"],
                  defaultValue: "Documentation",
                },
-               lvl1: ".theme-hope-content h1",
-               lvl2: ".theme-hope-content h2",
-               lvl3: ".theme-hope-content h3",
-               lvl4: ".theme-hope-content h4",
-               lvl5: ".theme-hope-content h5",
-               lvl6: ".theme-hope-content h6",
-               content: ".theme-hope-content p, .theme-hope-content li",
+               lvl1: "[vp-content] h1",
+               lvl2: "[vp-content] h2",
+               lvl3: "[vp-content] h3",
+               lvl4: "[vp-content] h4",
+               lvl5: "[vp-content] h5",
+               lvl6: "[vp-content] h6",
+               content: "[vp-content] p, [vp-content] li",
              },
-             indexHeadings: true,
+             recordVersion: "v3",
            });
          },
        },
@@ -295,48 +185,80 @@ See <ProjectLink name="search-pro">Plugin Docs</ProjectLink> for available optio
 
    :::
 
-1. Import `docsearchPlugin` from `@vuepress/plugin-docsearch` and apply it in `plugins` under `config.{ts,js}`.
+1. Customize the plugin with `plugins.docsearch` in theme options.
 
-   ::: code-tabs#language
-
-   @tab TS
-
-   ```ts
-   // .vuepress/config.ts
-   import { docsearchPlugin } from "@vuepress/plugin-docsearch";
-   import { defineUserConfig } from "vuepress";
-
-   export default defineUserConfig({
-     plugins: [
-       docsearchPlugin({
-         // your options
-         // appId, apiKey and indexName are required
-       }),
-     ],
-   });
-   ```
-
-   @tab JS
-
-   ```js
-   // .vuepress/config.js
-   import { docsearchPlugin } from "@vuepress/plugin-docsearch";
+   ```js {7-10} title=".vuepress/config.js"
+   import { hopeTheme } from "vuepress-theme-hope";
 
    export default {
-     plugins: [
-       docsearchPlugin({
-         // your options
-         // appId, apiKey and indexName are required
-       }),
-     ],
+     theme: hopeTheme({
+       plugins: {
+         docsearch: {
+           // plugin options here
+           // appId, apiKey and indexName are required
+         },
+       },
+     }),
    };
+   ```
+
+::: info More
+
+See [plugin docs][docsearch] for how to use docsearch plugin and its available options.
+
+:::
+
+## Use `@vuepress/plugin-slimsearch`
+
+1. Install `@vuepress/plugin-slimsearch`
+
+   ::: code-tabs#shell
+
+   @tab pnpm
+
+   ```bash
+   pnpm add -D @vuepress/plugin-slimsearch@next
+   ```
+
+   @tab yarn
+
+   ```bash
+   yarn add -D @vuepress/plugin-slimsearch@next
+   ```
+
+   @tab npm
+
+   ```bash
+   npm i -D @vuepress/plugin-slimsearch@next
    ```
 
    :::
 
+1. Customize `plugins.slimsearch` in theme options.
+
+   You can set `plugins.slimsearch` to `true` to enable it directly, or set it to an object to customize the plugin.
+
+   ```js title=".vuepress/config.js"
+   import { hopeTheme } from "vuepress-theme-hope";
+
+   export default {
+     theme: hopeTheme({
+       plugins: {
+         slimsearch: true,
+
+         // 或
+
+         slimsearch: {
+           // 插件选项
+         },
+       },
+     }),
+   };
+   ```
+
 ::: info More
 
-See [Plugin Docs][docsearch] for how to use docsearch plugin and its available options.
+See [plugin docs][slimsearch] for available options.
 
 :::
 
@@ -366,48 +288,29 @@ See [Plugin Docs][docsearch] for how to use docsearch plugin and its available o
 
    :::
 
-1. Import `searchPlugin` from `@vuepress/plugin-search` and apply it in `plugins` under `config.{ts,js}`.
+1. Customize `plugins.search` in theme options.
 
-   ::: code-tabs#language
-
-   @tab TS
-
-   ```ts
-   // .vuepress/config.ts
-   import { searchPlugin } from "@vuepress/plugin-search";
-   import { defineUserConfig } from "vuepress";
-
-   export default defineUserConfig({
-     plugins: [
-       searchPlugin({
-         // your options
-       }),
-     ],
-   });
-   ```
-
-   @tab JS
-
-   ```js
-   // .vuepress/config.js
-   import { searchPlugin } from "@vuepress/plugin-search";
+   ```js title=".vuepress/config.js"
+   import { hopeTheme } from "vuepress-theme-hope";
 
    export default {
-     plugins: [
-       searchPlugin({
-         // your options
-       }),
-     ],
+     theme: hopeTheme({
+       plugins: {
+         search: true,
+         // search: {
+         //   plugin options here
+         // },
+       },
+     }),
    };
    ```
 
-   :::
-
 ::: info More
 
-See [Plugin Docs][search] for available options.
+See [plugin docs][search] for available options.
 
 :::
 
-[docsearch]: https://v2.vuepress.vuejs.org/reference/plugin/docsearch.html
-[search]: https://v2.vuepress.vuejs.org/reference/plugin/search.html
+[docsearch]: https://ecosystem.vuejs.press/plugins/search/docsearch.html
+[search]: https://ecosystem.vuejs.press/plugins/search/search.html
+[slimsearch]: https://ecosystem.vuejs.press/plugins/search/slimsearch.html

@@ -1,69 +1,66 @@
-import { type GitData } from "@vuepress/plugin-git";
-import { type BlogTypeOptions } from "vuepress-plugin-blog2";
-import { compareDate } from "vuepress-shared/node";
+import { dateSorter } from "@vuepress/helper";
+import type { BlogTypeOptions } from "@vuepress/plugin-blog";
+import type { GitData } from "@vuepress/plugin-git";
 
 import { defaultPageSorter } from "./utils.js";
-import {
-  type ArticleInfo,
-  ArticleInfoType,
-  type BlogPluginOptions,
-  type ThemeData,
-  type ThemeNormalPageFrontmatter,
+import type {
+  ArticleInfoData,
+  BlogOptions,
+  ThemeData,
+  ThemeNormalPageFrontmatter,
 } from "../../../shared/index.js";
+import { ArticleInfo } from "../../../shared/index.js";
 
 /** @private */
 export const getBlogArticleType = (
-  options: BlogPluginOptions,
-  themeData: ThemeData
+  options: BlogOptions,
+  themeData: ThemeData,
 ): BlogTypeOptions<
   { git: GitData },
   ThemeNormalPageFrontmatter,
-  { routeMeta: ArticleInfo }
+  { routeMeta: ArticleInfoData }
 > =>
-  <
-    BlogTypeOptions<
-      { git: GitData },
-      ThemeNormalPageFrontmatter,
-      { routeMeta: ArticleInfo }
-    >
-  >{
+  ({
     key: "article",
-    sorter: defaultPageSorter,
+
     filter: ({ frontmatter, filePathRelative }): boolean =>
-      // not home
-      !frontmatter.home &&
-      // declaring this is an article
-      (frontmatter.article ||
-        // generated from markdown files
-        Boolean(frontmatter.article !== false && filePathRelative)),
+      // Declaring this is an article
+      frontmatter.article ??
+      // Generated from markdown files and not homepage
+      (Boolean(filePathRelative) && !frontmatter.home),
+
+    sorter: defaultPageSorter,
+
     path: options.article,
     layout: "BlogType",
+
     frontmatter: (localePath) => ({
       title: themeData.locales[localePath].blogLocales.article,
+      dir: { index: false },
       index: false,
       feed: false,
       sitemap: false,
     }),
-  };
+  }) as BlogTypeOptions<
+    { git: GitData },
+    ThemeNormalPageFrontmatter,
+    { routeMeta: ArticleInfoData }
+  >;
 
 /** @private */
 export const getBlogStarType = (
-  options: BlogPluginOptions,
-  themeData: ThemeData
+  options: BlogOptions,
+  themeData: ThemeData,
 ): BlogTypeOptions<
   { git: GitData },
   ThemeNormalPageFrontmatter,
-  { routeMeta: ArticleInfo }
+  { routeMeta: ArticleInfoData }
 > =>
-  <
-    BlogTypeOptions<
-      { git: GitData },
-      ThemeNormalPageFrontmatter,
-      { routeMeta: ArticleInfo }
-    >
-  >{
+  ({
     key: "star",
+
     filter: ({ frontmatter }) => Boolean(frontmatter.star),
+
     sorter: (pageA, pageB) => {
       const prevKey = pageA.frontmatter.star;
       const nextKey = pageB.frontmatter.star;
@@ -73,52 +70,61 @@ export const getBlogStarType = (
       if (prevKey && !nextKey) return -1;
       if (!prevKey && nextKey) return 1;
 
-      return compareDate(
-        pageA.routeMeta[ArticleInfoType.date],
-        pageB.routeMeta[ArticleInfoType.date]
+      return dateSorter(
+        pageA.routeMeta[ArticleInfo.date],
+        pageB.routeMeta[ArticleInfo.date],
       );
     },
 
     path: options.star,
     layout: "BlogType",
+
     frontmatter: (localePath) => ({
       title: themeData.locales[localePath].blogLocales.star,
+      dir: { index: false },
       index: false,
       feed: false,
       sitemap: false,
     }),
-  };
+  }) as BlogTypeOptions<
+    { git: GitData },
+    ThemeNormalPageFrontmatter,
+    { routeMeta: ArticleInfoData }
+  >;
 
 /** @private */
 export const getBlogTimelineType = (
-  options: BlogPluginOptions,
-  themeData: ThemeData
+  options: BlogOptions,
+  themeData: ThemeData,
 ): BlogTypeOptions<
   { git: GitData },
   ThemeNormalPageFrontmatter,
-  { routeMeta: ArticleInfo }
+  { routeMeta: ArticleInfoData }
 > =>
-  <
-    BlogTypeOptions<
-      { git: GitData },
-      ThemeNormalPageFrontmatter,
-      { routeMeta: ArticleInfo }
-    >
-  >{
+  ({
     key: "timeline",
+
     filter: ({ frontmatter, routeMeta }) =>
-      ArticleInfoType.date in routeMeta && frontmatter["timeline"] !== false,
+      ArticleInfo.date in routeMeta && frontmatter.timeline !== false,
+
     sorter: (pageA, pageB) =>
-      compareDate(
-        pageA.routeMeta[ArticleInfoType.date],
-        pageB.routeMeta[ArticleInfoType.date]
+      dateSorter(
+        pageA.routeMeta[ArticleInfo.date],
+        pageB.routeMeta[ArticleInfo.date],
       ),
+
     path: options.timeline,
     layout: "Timeline",
+
     frontmatter: (localePath) => ({
       title: themeData.locales[localePath].blogLocales.timeline,
+      dir: { index: false },
       index: false,
       feed: false,
       sitemap: false,
     }),
-  };
+  }) as BlogTypeOptions<
+    { git: GitData },
+    ThemeNormalPageFrontmatter,
+    { routeMeta: ArticleInfoData }
+  >;

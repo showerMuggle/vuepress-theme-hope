@@ -1,15 +1,4 @@
-import { type RequiredLocaleConfig } from "vuepress-shared";
-
-export interface BackToTopLocaleData {
-  /**
-   * Back to top button label text
-   *
-   * 返回顶部文字
-   */
-  backToTop: string;
-}
-
-export type BackToTopLocaleConfig = RequiredLocaleConfig<BackToTopLocaleData>;
+import type { DefaultLayoutTranslations } from "vidstack";
 
 export interface PDFLocaleData {
   /**
@@ -26,8 +15,6 @@ export interface PDFLocaleData {
   hint: string;
 }
 
-export type PDFLocaleConfig = RequiredLocaleConfig<PDFLocaleData>;
-
 export interface SiteInfoLocaleData {
   /**
    * Source text
@@ -37,4 +24,4 @@ export interface SiteInfoLocaleData {
   source: string;
 }
 
-export type SiteInfoLocaleConfig = RequiredLocaleConfig<SiteInfoLocaleData>;
+export type VidstackLocaleData = Partial<DefaultLayoutTranslations>;

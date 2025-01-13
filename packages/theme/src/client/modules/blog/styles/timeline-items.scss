@@ -12,8 +12,9 @@
 
   background: var(--dot-color);
 
-  transition: background var(--color-transition),
-    border-color var(--color-transition);
+  transition:
+    background var(--vp-t-color),
+    border-color var(--vp-t-color);
 }
 
 .timeline-wrapper {
@@ -29,24 +30,15 @@
     margin: 0 1.2rem;
   }
 
-  #{hope-config.$dark-selector} & {
+  [data-theme="dark"] & {
     --dot-color: #444;
     --dot-bar-color: #333;
     --dot-border-color: #555;
   }
 
   #toc {
-    // NOTE: Compatible with Android Wechat
-    // inset-inline-start: 0;
-    // inset-inline-end: unset;
-    right: 0;
-    left: unset;
+    inset-inline: unset 0;
     min-width: 0;
-
-    #{hope-config.$rtl-selector} & {
-      right: unset;
-      left: 0;
-    }
   }
 
   .toc-wrapper {
@@ -64,11 +56,8 @@
       content: " ";
 
       position: absolute;
+      inset-inline-start: 64px;
       top: 14px;
-
-      // NOTE: Compatible with Android Wechat
-      // inset-inline-start: 64px;
-      left: 64px;
       z-index: -1;
 
       width: 4px;
@@ -77,20 +66,15 @@
 
       background: var(--dot-bar-color);
 
-      transition: background var(--color-transition);
-
-      #{hope-config.$rtl-selector} & {
-        right: 64px;
-        left: unset;
-      }
+      transition: background var(--vp-t-color);
     }
   }
 
   .motto {
     position: relative;
-    color: var(--text-color);
+    color: var(--vp-c-text);
     font-size: 18px;
-    transition: color var(--color-transition);
+    transition: color var(--vp-t-color);
 
     @media (min-width: hope-config.$laptop) {
       font-size: 20px;
@@ -99,16 +83,9 @@
     &::before {
       @include dot;
 
-      // NOTE: Compatible with Android Wechat
-      // inset-inline-start: -10px;
-      left: -10px;
+      inset-inline-start: -10px;
       width: 8px;
       height: 8px;
-
-      #{hope-config.$rtl-selector} & {
-        right: -10px;
-        left: unset;
-      }
     }
   }
 
@@ -117,13 +94,13 @@
     margin-bottom: 0.5rem;
     padding-top: var(--navbar-height);
 
-    color: var(--text-color);
+    color: var(--vp-c-text);
 
     font-weight: 700;
     font-size: 26px;
-    font-family: var(--font-family-heading);
+    font-family: var(--vp-font-heading);
 
-    transition: color var(--color-transition);
+    transition: color var(--vp-t-color);
 
     span {
       position: relative;
@@ -131,16 +108,9 @@
       &::before {
         @include dot;
 
-        // NOTE: Compatible with Android Wechat
-        // inset-inline-start: -10px;
-        left: -10px;
+        inset-inline-start: -10px;
         width: 8px;
         height: 8px;
-
-        #{hope-config.$rtl-selector} & {
-          right: -10px;
-          left: unset;
-        }
       }
     }
   }
@@ -151,10 +121,7 @@
 
   .timeline-date {
     position: absolute;
-
-    // NOTE: Compatible with Android Wechat
-    // inset-inline-end: calc(100% + 24px);
-    right: calc(100% + 24px);
+    inset-inline-end: calc(100% + 24px);
 
     width: 50px;
 
@@ -162,24 +129,12 @@
     line-height: 30px;
     text-align: end;
 
-    #{hope-config.$rtl-selector} & {
-      right: unset;
-      left: calc(100% + 24px);
-    }
-
     &::before {
       @include dot;
 
-      // NOTE: Compatible with Android Wechat
-      // inset-inline-end: -19px;
-      right: -19px;
+      inset-inline-end: -19px;
       width: 6px;
       height: 6px;
-
-      #{hope-config.$rtl-selector} & {
-        right: unset;
-        left: -19px;
-      }
     }
   }
 
@@ -193,8 +148,9 @@
     font-size: 16px;
     line-height: 30px;
 
-    transition: color var(--color-transition),
-      font-size var(--transform-transition);
+    transition:
+      color var(--vp-t-color),
+      font-size var(--vp-t-transform);
   }
 
   .timeline-item {
@@ -207,30 +163,31 @@
 
     // make sure dot is aligned
     padding: 30px 0 10px;
-    border-bottom: 1px dashed var(--border-color);
+    border-bottom: 1px dashed var(--vp-c-border);
 
     list-style: none;
 
-    transition: border-color var(--color-transition);
+    transition: border-color var(--vp-t-color);
 
     &:hover {
       cursor: pointer;
 
       .timeline-date {
         font-size: 16px;
-        transition: border-color var(--color-transition),
-          color var(--color-transition), font-size var(--transform-transition);
+        transition:
+          border-color var(--vp-t-color),
+          color var(--vp-t-color),
+          font-size var(--vp-t-transform);
 
-        // stylelint-disable max-nesting-depth
+        // stylelint-disable-next-line max-nesting-depth
         &::before {
-          border-color: var(--theme-color);
-          background: var(--bg-color-secondary);
+          border-color: var(--vp-c-accent-bg);
+          background: var(--vp-c-bg-alt);
         }
-        // stylelint-enable max-nesting-depth
       }
 
       .timeline-title {
-        color: var(--theme-color);
+        color: var(--vp-c-accent);
         font-size: 18px;
       }
     }

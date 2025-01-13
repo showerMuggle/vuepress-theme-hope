@@ -1,10 +1,13 @@
-import { usePageFrontmatter } from "@vuepress/client";
-import { type VNode, defineComponent, h } from "vue";
-import { RouterLink } from "vue-router";
-import { type BlogPluginCategoryFrontmatter } from "vuepress-plugin-blog2";
-import { entries, generateIndexFromHash } from "vuepress-shared/client";
+import { entries } from "@vuepress/helper/client";
+import type { BlogPluginCategoryFrontmatter } from "@vuepress/plugin-blog";
+import type { VNode } from "vue";
+import { defineComponent, h } from "vue";
+import { RouteLink, usePageFrontmatter } from "vuepress/client";
+import { generateIndexFromHash } from "vuepress-shared/client";
 
 import { useTagMap } from "@theme-hope/modules/blog/composables/index";
+
+import cssVariables from "../../../styles/variables.module.scss";
 
 import "../styles/tag-list.scss";
 
@@ -21,24 +24,26 @@ export default defineComponent({
     return (): VNode =>
       h(
         "ul",
-        { class: "tag-list-wrapper" },
-        entries(tagMap.value.map).map(([tag, { path, items }]) =>
-          h(
-            "li",
-            {
-              class: [
-                "tag",
-                // TODO: magic number 9 is tricky here
-                `tag${generateIndexFromHash(tag, 9)}`,
-                { active: isActive(tag) },
-              ],
-            },
-            h(RouterLink, { to: path }, () => [
-              tag,
-              h("span", { class: "tag-num" }, items.length),
-            ])
-          )
-        )
+        { class: "vp-tag-list" },
+        entries(tagMap.value.map)
+          // Sort from more to less
+          .sort(([, a], [, b]) => b.items.length - a.items.length)
+          .map(([tag, { path, items }]) =>
+            h(
+              "li",
+              {
+                class: [
+                  "vp-tag",
+                  `color${generateIndexFromHash(tag, Number(cssVariables.colorNumber))}`,
+                  { active: isActive(tag) },
+                ],
+              },
+              h(RouteLink, { to: path }, () => [
+                tag,
+                h("span", { class: "vp-tag-count" }, items.length),
+              ]),
+            ),
+          ),
       );
   },
 });

@@ -1,10 +1,9 @@
-import { type Code, loadScript } from "../utils/index.js";
+import type { Code } from "../utils/index.js";
+import { loadScript } from "../utils/index.js";
 
 export type ScriptLoadState = Record<string, Promise<void>>;
 
 const state: ScriptLoadState = {};
-
-export const useState = (): ScriptLoadState => state;
 
 export const loadReact = (code: Code): Promise<void[]> =>
   Promise.all([

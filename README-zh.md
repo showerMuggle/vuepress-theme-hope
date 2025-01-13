@@ -1,11 +1,11 @@
 <!-- markdownlint-disable -->
 <p align="center">
-  <img width="240" src="https://theme-hope.vuejs.press/logo.svg" style="text-align: center;">
+  <img width="240" src="https://theme-hope-assets.vuejs.press/logo.svg" style="text-align: center;">
 </p>
 <h1 align="center">vuepress-theme-hope</h1>
 <h4 align="center">一个具有强大功能的 VuePress 主题✨</h4>
 
-[![Author: Mr.Hope](https://img.shields.io/badge/作者-Mr.Hope-blue.svg?style=for-the-badge)](https://mrhope.site)
+[![Author: Mr.Hope](https://img.shields.io/badge/作者-Mr.Hope-blue.svg?style=for-the-badge)](https://mister-hope.com)
 [![License](https://img.shields.io/npm/l/vuepress-theme-hope.svg?style=for-the-badge)](https://github.com/vuepress-theme-hope/vuepress-theme-hope/blob/main/LICENSE)
 [![Open in Visual Studio Code](https://img.shields.io/badge/-在%20vscode%20中打开-blue?style=for-the-badge&logo=visualstudiocode)](https://open.vscode.dev/vuepress-theme-hope/vuepress-theme-hope)
 
@@ -24,17 +24,17 @@
 
 ## 详情
 
-V2 基于 [_VuePress2_](https://v2.vuepress.vuejs.org/zh/)， 带有 [_Vite4_](https://cn.vitejs.dev/) / [_Webpack5_](https://webpack.docschina.org/) 和 [_Vue3_](https://cn.vuejs.org/) 的强大功能。
+V2 基于 [**VuePress2**](https://vuejs.press/zh/)， 通过 [**Vite6**](https://cn.vite.dev/) / [**Webpack5**](https://webpack.docschina.org/) 提供通过 [**Vue3**](https://cn.vuejs.org/) 提供强大功能。
 
 V2 完全重写，包括:
 
-- 所有组件都用 _Vue3 中的 Composition API_ 重写
-- 所有样式都迁移到 _Sass_
+- 所有组件都用 **Vue3 中的 Composition API** 重写
+- 所有样式都迁移到 **Sass**
 
 V2 也有更好的性能 🚀:
 
-- DevServer 冷启动时间减少 **50%**
-- 构建内存减小 **65%**
-- 构建时间减少 **30%**
+- DevServer 冷启动时间减少了 **70%**
+- 构建内存使用量减少了 **65%**
+- 构建时间减少了 **75%**
 - 输出尺寸减少 **35%**
-- 网页性能提高 **70%**
+- 网页性能提高 **60%**

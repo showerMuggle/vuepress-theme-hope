@@ -1,4 +1,4 @@
-import { type ThemeLocaleData } from "../../shared/index.js";
+import type { ThemeLocaleData } from "../../shared/index.js";
 
 export const idLocale: ThemeLocaleData = {
   lang: "id-ID",
@@ -36,6 +36,7 @@ export const idLocale: ThemeLocaleData = {
     all: "Semua",
     intro: "Perkenalan",
     star: "Berbintang",
+    empty: "$text kosong",
   },
 
   paginationLocales: {
@@ -70,6 +71,5 @@ export const idLocale: ThemeLocaleData = {
     ],
     back: "Kembali",
     home: "Ke Beranda",
-    openInNewWindow: "Buka di jendela baru",
   },
 };

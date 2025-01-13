@@ -37,7 +37,7 @@ Current page's description.
 - Type: `string`
 - Required: No
 - Details:
-  - [Guide → Icon Support](../../guide/interface/icon.md)
+  - [Interface → Icon Support](../../guide/interface/icon.md)
 
 FontClass / Image link of the current page icon (recommended).
 
@@ -69,6 +69,8 @@ FontClass / Image link of the current page icon (recommended).
   ```
 
 - Required: No
+- Details:
+  - [Feature → Page Info](../../guide/feature/page-info.md#author)
 
 Show the author of the current page. If you don't fill it, you will fall back to the default author.
 
@@ -82,6 +84,8 @@ When setting default author in theme options, you can set `false` to prevent sho
 
 - Type: `boolean`
 - Default: `false`
+- Details:
+  - [Feature → Page Info](../../guide/feature/page-info.md#parameters)
 
 Whether the current article is original.
 
@@ -89,14 +93,17 @@ Whether the current article is original.
 
 - Type: `DateString`
 - Required: No
-- Format: `YYYY-MM-DD` or `YYYY-MM-DD hh:mm:ss`
+- Details:
+  - [Feature → Page Info](../../guide/feature/page-info.md#writing-date)
 
-Set the writing time of the current page.
+Set the writing time of the current page, with `YYYY-MM-DD` or `YYYY-MM-DD hh:mm:ss` format
 
 ## category
 
 - Type: `string | string[]`
 - Required: No
+- Details:
+  - [Feature → Page Info](../../guide/feature/page-info.md#category-and-tags)
 
 Set the category of the current page.
 
@@ -104,27 +111,50 @@ Set the category of the current page.
 
 - Type: `string | string []`
 - Required: No
+- Details:
+  - [Feature → Page Info](../../guide/feature/page-info.md#category-and-tags)
 
 Set the label of the current page.
 
-## sticky
+## license
 
-- Type: `boolean | number`
-- Default: `false`
+- Type: `string`
+- Default: value in theme options
+- Details:
+  - [Layout → Footer](../../guide/layout/footer.md#copyright-information).
 
-Sets whether the current article is pinned in the list. When fill in with number, greater ones come before smaller ones.
+License name of the page.
 
-## star
+## copyright
 
-- Type: `boolean | number`
-- Default: `false`
+- Type: `string | false`
+- Default: value in theme options
+- Details:
+  - [Layout → Footer](../../guide/layout/footer.md#copyright-information).
 
-Sets whether the current article is pinned in the article list in blog theme. When fill in with number, greater ones come before smaller ones.
+The copyright information of the page, will be displayed in footer
+
+## pageview
+
+- Type: `boolean`
+- Default: value in theme options
+- Details:
+  - [Feature → Comment](../../guide/feature/comment.md#waline)
+
+Whether display page views.
+
+::: tip
+
+The pageview feature requires you to have a valid Waline Comment Service config.
+
+:::
 
 ## article
 
 - Type: `boolean`
 - Default: `true`
+- Details:
+  - [Blog → Article](../../guide/blog/article.md#article).
 
 Whether to add the article to the article list.
 
@@ -132,12 +162,43 @@ Whether to add the article to the article list.
 
 - Type: `boolean`
 - Default: `true`
+- Details:
+  - [Blog → Timeline](../../guide/blog/timeline.md#excluding-articles).
 
 Whether to add the article to the timeline list.
 
-## image
+## sticky
+
+- Type: `boolean | number`
+- Default: `false`
+- Details:
+  - [Blog → Article](../../guide/blog/article.md#article).
+
+Sets whether the current article is pinned in the list. When fill in with number, greater ones come before smaller ones.
+
+## star
+
+- Type: `boolean | number`
+- Default: `false`
+- Details:
+  - [Blog → Article](../../guide/blog/article.md#star-articles).
+
+Sets whether the current article is pinned in the article list in blog theme. When fill in with number, greater ones come before smaller ones.
+
+## cover
 
 - Type: `string`
 - Required: No
+- Details:
+  - [FAQ → Links in Config](../../faq/common-question.md#links-in-config)
 
-Current page's image, needs an absolute path.
+Cover image of the page.
+
+## banner
+
+- Type: `string`
+- Required: No
+- Details:
+  - [FAQ → Links in Config](../../faq/common-question.md#links-in-config)
+
+Banner image of the page.

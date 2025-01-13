@@ -1,5 +1,5 @@
 ---
-title: 插件说明
+title: 主题插件
 icon: circle-info
 order: 1
 category:
@@ -10,21 +10,7 @@ tag:
   - 介绍
 ---
 
-`vuepress-theme-hope` 会调用很多 VuePress 插件。
-
-- 一些插件会自动启用，如果你不需要，可以在主题选项中将其禁用;
-- 一些插件只有你在进行必要配置后才会启用。
-
-::: note
-
-作为 [VuePress Org](https://github.com/orgs/vuepress/people) 的成员之一，Mr.Hope 开发了很多 VuePress 插件。
-
-`vuepress-theme-hope` 调用的所有插件均为官方插件或托管在 `vuepress-theme-hope` 仓库下由 Mr.Hope 自己开发的插件。
-
-- 官方插件的文档详见 [VuePress2 官网][vuepress]
-- Mr.Hope 自己开发的插件也全部拥有自己的文档，可以搭配其他主题使用。
-
-:::
+`vuepress-theme-hope` 捆绑了很多 VuePress 插件并提供了更多 VuePress 插件支持。
 
 <!-- more -->
 
@@ -38,78 +24,123 @@ tag:
 
 例如:
 
-- `vuepress-plugin-copy-code2` 的配置键名为 `copyCode`。
+- `@vuepress/plugin-copy-code` 的配置键名为 `copyCode`。
+- `@vuepress/plugin-copyright` 的配置键名为 `copyright`
 - `vuepress-plugin-md-enhance` 的配置键名为 `mdEnhance`
 
 :::
 
 ## 插件列表
 
-### Mr.Hope 提供的插件
+### 内置插件
 
-- <ProjectLink name="auto-catalog" path="/zh/">vuepress-plugin-auto-catalog</ProjectLink>: VuePress2 的目录自动生成插件
+下列插件被内部调用，不可禁用:
 
-- <ProjectLink name="blog2" path="/zh/">vuepress-plugin-blog2</ProjectLink>: VuePress2 的博客插件
-
-- <ProjectLink name="comment2" path="/zh/">vuepress-plugin-comment2</ProjectLink>: 提供评论与浏览量功能
-
-- <ProjectLink name="components" path="/zh/">vuepress-plugin-components</ProjectLink>: 提供一些开箱即用的插件
-
-- <ProjectLink name="copy-code2" path="/zh/">vuepress-plugin-copy-code2</ProjectLink>: 提供一键复制代码块功能。
-
-- <ProjectLink name="copyright2" path="/zh/">vuepress-plugin-copyright2</ProjectLink>: 在用户复制时追加版权信息，或禁用站点的复制与选择。
-
-- <ProjectLink name="feed2" path="/zh/">vuepress-plugin-feed2</ProjectLink>: Feed 支持
-
-- <ProjectLink name="md-enhance" path="/zh/">vuepress-plugin-md-enhance</ProjectLink>: 提供更多 Markdown 语法
-
-- <ProjectLink name="photo-swipe" path="/zh/">vuepress-plugin-photo-swipe</ProjectLink>: 基于 Photo Swipe 的图片浏览插件
-
-- <ProjectLink name="pwa2" path="/zh/">vuepress-plugin-pwa2</ProjectLink>: 增强的 PWA 支持
-
-- <ProjectLink name="reading-time2" path="/zh/">vuepress-plugin-reading-time2</ProjectLink>: 阅读时间与字数统计
-
-- <ProjectLink name="sass-palette" path="/zh/">vuepress-plugin-sass-palette</ProjectLink>: 面向全部插件和主题的 Sass 配置插件
-
-- <ProjectLink name="seo2" path="/zh/">vuepress-plugin-seo2</ProjectLink>: SEO 增强插件
-
-- <ProjectLink name="sitemap2" path="/zh/">vuepress-plugin-sitemap2</ProjectLink>: Sitemap 插件
-
-::: tip
-
-这里还有一些其他没有被主题捆绑的插件，你可以根据自己的需求自行启用。
-
-- <ProjectLink name="lightgallery" path="/zh/">vuepress-plugin-lightgallery</ProjectLink>: 基于 lightgallery 图片浏览插件
-
-- <ProjectLink name="redirect" path="/zh/">vuepress-plugin-redirect</ProjectLink>: 重定向插件
-
-- <ProjectLink name="remove-pwa" path="/zh/">vuepress-plugin-remove-pwa</ProjectLink>: 移除 PWA 插件
-
-- <ProjectLink name="search-pro" path="/zh/">vuepress-plugin-search-pro</ProjectLink>: 客户端搜索插件
-
-:::
-
-### 官方插件
-
-- [@vuepress/plugin-active-header-links][active-header-links]: 自动更新路由 Hash
-
-- [@vuepress/plugin-container][container]: 自定义容器
-
-- [@vuepress/external-link-icon][external-link-icon]: 为 Markdown 的外部链接添加外部链接图标。
-
-- [@vuepress/plugin-git][git]: 基于 Git 的信息插件
-
-- [@vuepress/plugin-nprogress][nprogress]: 进度条
-
-- [@vuepress/plugin-prismjs][prismjs]: 基于 prism.js 的代码高亮插件
+- [@vuepress/plugin-sass-palette][sass-palette]: 面向插件和主题的 Sass 配置插件
 
 - [@vuepress/plugin-theme-data][theme-data]: 主题配置的 Composition API 插件
 
-[active-header-links]: https://v2.vuepress.vuejs.org/zh/reference/plugin/active-header-links.html
-[container]: https://v2.vuepress.vuejs.org/zh/reference/plugin/container.html
-[external-link-icon]: https://v2.vuepress.vuejs.org/zh/reference/plugin/external-link-icon.html
-[git]: https://v2.vuepress.vuejs.org/zh/reference/plugin/git.html
-[nprogress]: https://v2.vuepress.vuejs.org/zh/reference/plugin/nprogress.html
-[prismjs]: https://v2.vuepress.vuejs.org/zh/reference/plugin/prismjs.html
-[theme-data]: https://v2.vuepress.vuejs.org/zh/reference/plugin/theme-data.html
-[vuepress]: https://v2.vuepress.vuejs.org/zh/
+- <ProjectLink name="components" path="/zh/">vuepress-plugin-components</ProjectLink>: 提供一些开箱即用的组件
+
+### 自动启用的插件
+
+下列插件默认启用，你可以禁用它们:
+
+- [@vuepress/plugin-active-header-links][active-header-links]: 自动更新路由 Hash
+
+- [@vuepress/plugin-back-to-top][back-to-top]: 返回顶部按钮
+
+- [@vuepress/plugin-catalog][catalog]: 提供目录页自动生成与 `<Catalog />` 组件
+
+- [@vuepress/plugin-copy-code][copy-code]: 为代码块提供复制按钮。
+
+- [@vuepress/plugin-git][git]: 基于 Git 的信息插件
+
+- [@vuepress/plugin-links-check][links-check]: 检查 Markdown 链接
+
+- [@vuepress/plugin-markdown-hint][markdown-hint]: Markdown 提示容器
+
+- [@vuepress/plugin-markdown-image][markdown-image]: Markdown 图片增强
+
+- [@vuepress/plugin-nprogress][nprogress]: 进度条
+
+- [@vuepress/plugin-photo-swipe][photo-swipe]: 基于 Photo Swipe 的图片浏览插件
+
+- [@vuepress/plugin-reading-time][reading-time]: 阅读时间与字数统计
+
+- [@vuepress/plugin-seo][seo]: SEO 增强插件
+
+- [@vuepress/plugin-shiki][shiki]: 基于 Shiki 的代码高亮插件
+
+- [@vuepress/plugin-sitemap][sitemap]: Sitemap 插件
+
+- <ProjectLink name="md-enhance" path="/zh/">vuepress-plugin-md-enhance</ProjectLink>: 提供更多 Markdown 语法
+
+### 需要手动启用的插件
+
+主题捆绑以下插件，你可以通过配置启用它们
+
+- [@vuepress/plugin-blog][blog]: VuePress2 的博客插件
+
+- [@vuepress/plugin-copyright][copyright]: 在用户复制时追加版权信息，或禁用站点的复制与选择。
+
+- [@vuepress/plugin-comment][comment]: 提供评论与浏览量功能
+
+- [@vuepress/plugin-markdown-math][markdown-math]: 公式支持
+
+- [@vuepress/plugin-notice][notice]: 提供公告
+
+- [@vuepress/plugin-rtl][rtl]: 提供 RTL 支持
+
+- [@vuepress/plugin-watermark][watermark]: 水印插件
+
+### 内置支持的插件
+
+以下插件受到主题支持，但你需要在使用前自行安装它们:
+
+- [@vuepress/plugin-docsearch][docsearch]: 基于 DocSearch 的搜索插件
+
+- [@vuepress/plugin-search][search]: 简单的客户端搜索插件
+
+- [@vuepress/plugin-slimsearch][slimsearch]: 基于 SlimSearch 的客户端搜索插件
+
+- [@vuepress/plugin-feed][feed]: Feed 支持
+
+- [@vuepress/plugin-prismjs][prismjs]: 基于 prism.js 的代码高亮插件
+
+- [@vuepress/plugin-redirect][redirect]: 重定向插件
+
+- [@vuepress/plugin-pwa][pwa]: PWA 支持
+
+### 官方插件
+
+[active-header-links]: https://ecosystem.vuejs.press/zh/plugins/development/active-header-links.html
+[back-to-top]: https://ecosystem.vuejs.press/zh/plugins/features/back-to-top.html
+[blog]: https://ecosystem.vuejs.press/zh/plugins/blog/blog/
+[catalog]: https://ecosystem.vuejs.press/zh/plugins/features/catalog.html
+[comment]: https://ecosystem.vuejs.press/zh/plugins/blog/comment/
+[copy-code]: https://ecosystem.vuejs.press/zh/plugins/features/copy-code.html
+[copyright]: https://ecosystem.vuejs.press/zh/plugins/features/copyright.html
+[docsearch]: https://ecosystem.vuejs.press/zh/plugins/search/docsearch.html
+[feed]: https://ecosystem.vuejs.press/zh/plugins/blog/feed/
+[git]: https://ecosystem.vuejs.press/zh/plugins/development/git.html
+[markdown-hint]: https://ecosystem.vuejs.press/zh/plugins/markdown/markdown-hint.html
+[markdown-image]: https://ecosystem.vuejs.press/zh/plugins/markdown/markdown-image.html
+[markdown-math]: https://ecosystem.vuejs.press/zh/plugins/markdown/markdown-math.html
+[links-check]: https://ecosystem.vuejs.press/zh/plugins/markdown/links-check.html
+[notice]: https://ecosystem.vuejs.press/zh/plugins/features/notice.html
+[nprogress]: https://ecosystem.vuejs.press/zh/plugins/features/nprogress.html
+[photo-swipe]: https://ecosystem.vuejs.press/zh/plugins/features/photo-swipe.html
+[prismjs]: https://ecosystem.vuejs.press/zh/plugins/markdown/prismjs.html
+[pwa]: https://ecosystem.vuejs.press/zh/plugins/pwa/pwa/
+[redirect]: https://ecosystem.vuejs.press/zh/plugins/tools/redirect.html
+[reading-time]: https://ecosystem.vuejs.press/zh/plugins/development/reading-time.html
+[rtl]: https://ecosystem.vuejs.press/zh/plugins/development/rtl.html
+[sass-palette]: https://ecosystem.vuejs.press/zh/plugins/development/sass-palette/
+[search]: https://ecosystem.vuejs.press/zh/plugins/search/search.html
+[seo]: https://ecosystem.vuejs.press/zh/plugins/seo/seo/
+[shiki]: https://ecosystem.vuejs.press/zh/plugins/markdown/shiki.html
+[sitemap]: https://ecosystem.vuejs.press/zh/plugins/seo/sitemap/
+[slimsearch]: https://ecosystem.vuejs.press/zh/plugins/search/slimsearch.html
+[theme-data]: https://ecosystem.vuejs.press/zh/plugins/development/theme-data.html
+[watermark]: https://ecosystem.vuejs.press/zh/plugins/features/watermark.html

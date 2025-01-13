@@ -1,12 +1,12 @@
-import { type VNode, defineComponent, h } from "vue";
+import type { FunctionalComponent } from "vue";
+import { h } from "vue";
 
-import BlogHome from "@theme-hope/modules/blog/components/BlogHome";
+import BlogHomePage from "@theme-hope/modules/blog/components/BlogHomePage";
 import BlogWrapper from "@theme-hope/modules/blog/components/BlogWrapper";
 
-export default defineComponent({
-  name: "BlogHome",
+const BlogHome: FunctionalComponent = () =>
+  h(BlogWrapper, () => h(BlogHomePage));
 
-  setup() {
-    return (): VNode => h(BlogWrapper, () => h(BlogHome));
-  },
-});
+BlogHome.displayName = "BlogHome";
+
+export default BlogHome;

@@ -1,10 +1,10 @@
 // German (Austria) [de-at]
+import { isArray } from "@vuepress/helper";
 import type dayjs from "dayjs";
 
-import { type Locale } from "./locale.js";
-import { isArray } from "../../../shared/index.js";
+import type { FormatKey, Locale } from "./locale.js";
 
-const texts = {
+const texts: Record<FormatKey, [string, string] | string> = {
   s: "ein paar Sekunden",
   m: ["eine Minute", "einer Minute"],
   mm: "%d Minuten",
@@ -21,7 +21,7 @@ const texts = {
 const relativeTimeFormatter = (
   number: string,
   withoutSuffix: boolean,
-  key: "s" | "m" | "mm" | "h" | "hh" | "d" | "dd" | "M" | "MM" | "y" | "yy"
+  key: FormatKey,
 ): string => {
   let l = texts[key];
 
@@ -33,13 +33,13 @@ const relativeTimeFormatter = (
 const locale: Partial<Locale> = {
   name: "de-at",
   weekdays: "Sonntag_Montag_Dienstag_Mittwoch_Donnerstag_Freitag_Samstag".split(
-    "_"
+    "_",
   ),
   weekdaysShort: "So._Mo._Di._Mi._Do._Fr._Sa.".split("_"),
   weekdaysMin: "So_Mo_Di_Mi_Do_Fr_Sa".split("_"),
   months:
     "Jänner_Februar_März_April_Mai_Juni_Juli_August_September_Oktober_November_Dezember".split(
-      "_"
+      "_",
     ),
   monthsShort:
     "Jän._Feb._März_Apr._Mai_Juni_Juli_Aug._Sep._Okt._Nov._Dez.".split("_"),
@@ -56,27 +56,27 @@ const locale: Partial<Locale> = {
   relativeTime: {
     future: "in %s",
     past: "vor %s",
-    // @ts-ignore
+    // @ts-expect-error: dayjs locale is not correctly typed
     s: relativeTimeFormatter,
-    // @ts-ignore
+    // @ts-expect-error: dayjs locale is not correctly typed
     m: relativeTimeFormatter,
-    // @ts-ignore
+    // @ts-expect-error: dayjs locale is not correctly typed
     mm: relativeTimeFormatter,
-    // @ts-ignore
+    // @ts-expect-error: dayjs locale is not correctly typed
     h: relativeTimeFormatter,
-    // @ts-ignore
+    // @ts-expect-error: dayjs locale is not correctly typed
     hh: relativeTimeFormatter,
-    // @ts-ignore
+    // @ts-expect-error: dayjs locale is not correctly typed
     d: relativeTimeFormatter,
-    // @ts-ignore
+    // @ts-expect-error: dayjs locale is not correctly typed
     dd: relativeTimeFormatter,
-    // @ts-ignore
+    // @ts-expect-error: dayjs locale is not correctly typed
     M: relativeTimeFormatter,
-    // @ts-ignore
+    // @ts-expect-error: dayjs locale is not correctly typed
     MM: relativeTimeFormatter,
-    // @ts-ignore
+    // @ts-expect-error: dayjs locale is not correctly typed
     y: relativeTimeFormatter,
-    // @ts-ignore
+    // @ts-expect-error: dayjs locale is not correctly typed
     yy: relativeTimeFormatter,
   },
 };

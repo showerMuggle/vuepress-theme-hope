@@ -1,4 +1,4 @@
-import { type ThemeLocaleData } from "../../shared/index.js";
+import type { ThemeLocaleData } from "../../shared/index.js";
 
 export const trLocale: ThemeLocaleData = {
   lang: "tr-TR",
@@ -36,6 +36,7 @@ export const trLocale: ThemeLocaleData = {
     all: "Hepsi",
     intro: "Kişisel Tanıtım",
     star: "Yıldız",
+    empty: "$text boş",
   },
 
   paginationLocales: {
@@ -70,6 +71,5 @@ export const trLocale: ThemeLocaleData = {
     ],
     back: "Geri dön",
     home: "Ana sayfaya git",
-    openInNewWindow: "Yeni pencerede aç",
   },
 };

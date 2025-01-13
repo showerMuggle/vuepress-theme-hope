@@ -1,6 +1,11 @@
-import { usePageData, useRouteLocale } from "@vuepress/client";
-import { type VNode, computed, defineComponent, h } from "vue";
-import { RouterLink } from "vue-router";
+import type { VNode } from "vue";
+import { computed, defineComponent, h } from "vue";
+import {
+  RouteLink,
+  resolveRoute,
+  usePageData,
+  useRouteLocale,
+} from "vuepress/client";
 
 import { useThemeLocaleData } from "@theme-hope/composables/index";
 import {
@@ -8,9 +13,11 @@ import {
   useStars,
 } from "@theme-hope/modules/blog/composables/index";
 
+import { PageInfo } from "../../../../shared/index.js";
+
 import "../styles/article-type.scss";
 
-declare const BLOG_TYPE_INFO: { key: string; path: string }[];
+declare const __VP_BLOG_TYPES__: { key: string; path: string }[];
 
 export default defineComponent({
   name: "ArticleType",
@@ -31,29 +38,37 @@ export default defineComponent({
           path: articles.value.path,
         },
         { text: locale.star, path: stars.value.path },
-        ...BLOG_TYPE_INFO.map(({ key, path }) => ({
-          text: locale[key],
-          path: path.replace(/^\//, localePath.value),
-        })),
+        ...__VP_BLOG_TYPES__.map(({ key, path }) => {
+          const routePath = path.replace(/^\//, localePath.value);
+
+          return {
+            text:
+              // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+              locale[key] ??
+              resolveRoute(routePath).meta[PageInfo.title] ??
+              key,
+            path: routePath,
+          };
+        }),
       ];
     });
 
     return (): VNode =>
       h(
         "ul",
-        { class: "article-type-wrapper" },
+        { class: "vp-article-type-wrapper" },
         types.value.map((type) =>
           h(
             "li",
             {
               class: [
-                "article-type",
+                "vp-article-type",
                 { active: type.path === page.value.path },
               ],
             },
-            h(RouterLink, { to: type.path }, () => type.text)
-          )
-        )
+            h(RouteLink, { to: type.path }, () => type.text),
+          ),
+        ),
       );
   },
 });

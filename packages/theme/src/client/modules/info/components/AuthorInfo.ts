@@ -1,6 +1,8 @@
-import { type PropType, type VNode, defineComponent, h } from "vue";
-import { type AuthorInfo } from "vuepress-shared/client";
+import type { PropType, VNode } from "vue";
+import { defineComponent, h } from "vue";
+import type { AuthorInfo } from "vuepress-shared/client";
 
+import { usePure } from "@theme-hope/composables/index";
 import { AuthorIcon } from "@theme-hope/modules/info/components/icons";
 import { useMetaLocale } from "@theme-hope/modules/info/composables/index";
 
@@ -21,17 +23,11 @@ export default defineComponent({
       type: Array as PropType<AuthorInfo[]>,
       required: true,
     },
-
-    /**
-     * Whether in pure mode
-     *
-     * 是否处于纯净模式
-     */
-    pure: Boolean,
   },
 
   setup(props) {
     const metaLocale = useMetaLocale();
+    const isPure = usePure();
 
     return (): VNode | null =>
       props.author.length
@@ -40,9 +36,9 @@ export default defineComponent({
             {
               class: "page-author-info",
               "aria-label": `${metaLocale.value.author}${
-                props.pure ? "" : "🖊"
+                isPure.value ? "" : "🖊"
               }`,
-              ...(props.pure ? {} : { "data-balloon-pos": "down" }),
+              ...(isPure.value ? {} : { "data-balloon-pos": "up" }),
             },
             [
               h(AuthorIcon),
@@ -58,16 +54,16 @@ export default defineComponent({
                           target: "_blank",
                           rel: "noopener noreferrer",
                         },
-                        item.name
+                        item.name,
                       )
-                    : h("span", { class: "page-author-item" }, item.name)
-                )
+                    : h("span", { class: "page-author-item" }, item.name),
+                ),
               ),
               h("span", {
                 property: "author",
                 content: props.author.map((item) => item.name).join(", "),
               }),
-            ]
+            ],
           )
         : null;
   },

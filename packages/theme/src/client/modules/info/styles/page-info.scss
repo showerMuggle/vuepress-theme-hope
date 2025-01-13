@@ -1,13 +1,10 @@
-@use "vuepress-shared/styles/wrapper";
-
 .page-info {
   display: flex;
   flex-wrap: wrap;
-  align-content: stretch;
+  place-content: stretch flex-start;
   align-items: center;
-  justify-content: flex-start;
 
-  color: var(--dark-grey);
+  color: var(--vp-c-text-mute);
 
   font-size: 14px;
 
@@ -54,7 +51,7 @@
 
     &:hover,
     &:active {
-      color: var(--theme-color);
+      color: var(--vp-c-accent);
     }
   }
 }

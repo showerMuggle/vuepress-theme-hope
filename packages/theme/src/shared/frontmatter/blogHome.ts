@@ -1,4 +1,4 @@
-import { type ThemePageFrontmatter } from "./base.js";
+import type { ThemeHopePageFrontmatter } from "./home.js";
 
 export interface ThemeBlogHomeProjectOptions {
   /**
@@ -32,26 +32,30 @@ export interface ThemeBlogHomeProjectOptions {
    * @description 支持图片链接或者图标字体类，同时也支持 `"link"`、`"project"`、`"book"`、`"article"`、`"friend"`
    */
   icon?: string;
+
+  /**
+   * Background color
+   *
+   * @description Can be css variables
+   *
+   * 背景颜色
+   *
+   * @description 可以是 CSS 变量
+   */
+  background?: string;
 }
 
-export interface ThemeBlogHomePageFrontmatter extends ThemePageFrontmatter {
-  home: true;
+export interface ThemeBlogHomePageFrontmatter extends ThemeHopePageFrontmatter {
   layout: "BlogHome";
   /**
    * @default true
    */
   hero?: boolean;
+
   /**
-   * @default false
+   * Projects
+   *
+   * 项目
    */
-  heroFullScreen?: boolean;
-  heroImage?: string;
-  heroImageDark?: string;
-  heroImageStyle?: Record<string, string> | string;
-  heroAlt?: string;
-  heroText?: string | false;
-  bgImage?: string | false;
-  bgImageStyle?: Record<string, string> | string;
-  tagline?: string;
   projects: ThemeBlogHomeProjectOptions[];
 }

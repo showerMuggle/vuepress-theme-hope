@@ -3,7 +3,7 @@ title: VuePress 配置
 icon: gears
 order: 4
 category:
-  - 教程知识
+  - 教程
   - VuePress
 tag:
   - 配置
@@ -27,11 +27,7 @@ VuePress 站点的基本配置文件是 `.vuepress/config.js` ，但也同样支
 
 一个基础的配置文件是这样的:
 
-::: code-tabs#language
-
-@tab TS
-
-```ts
+```js
 import { defineUserConfig } from "vuepress";
 import { hopeTheme } from "vuepress-theme-hope";
 
@@ -49,30 +45,9 @@ export default defineUserConfig({
 });
 ```
 
-@tab JS
-
-```js
-import { hopeTheme } from "vuepress-theme-hope";
-
-export default {
-  // 站点配置
-  lang: "zh-CN",
-  title: "你好， VuePress ！",
-  description: "这是我的第一个 VuePress 站点",
-
-  // 主题
-  theme: hopeTheme({
-    // 主题配置
-    logo: "https://vuejs.org/images/logo.png",
-  }),
-};
-```
-
-:::
-
 ::: tip
 
-前往 [配置参考](https://v2.vuepress.vuejs.org/zh/reference/config.html) 查看所有 VuePress 配置。
+前往 [配置参考](https://vuejs.press/zh/reference/config.html) 查看所有 VuePress 配置。
 
 :::
 
@@ -113,7 +88,7 @@ export default {
 一个基础的客户端配置文件是这样的：
 
 ```ts
-import { defineClientConfig } from "@vuepress/client";
+import { defineClientConfig } from "vuepress/client";
 
 export default defineClientConfig({
   enhance({ app, router, siteData }) {},
@@ -126,6 +101,6 @@ export default defineClientConfig({
 
 和配置文件不同，客户端配置文件不能通过命令行接口的选项来指定。
 
-可以前往 [深入 > Cookbook > 客户端配置的使用方法](https://v2.vuepress.vuejs.org/zh/advanced/cookbook/usage-of-client-config.html) 来了解更多信息。
+可以前往 [深入 > Cookbook > 客户端配置的使用方法](https://vuejs.press/zh/advanced/cookbook/usage-of-client-config.html) 来了解更多信息。
 
 :::

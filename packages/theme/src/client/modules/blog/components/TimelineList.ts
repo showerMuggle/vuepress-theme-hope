@@ -1,12 +1,13 @@
-import { type VNode, computed, defineComponent, h } from "vue";
-import { RouterLink } from "vue-router";
+import type { VNode } from "vue";
+import { computed, defineComponent, h } from "vue";
+import { RouteLink } from "vuepress/client";
 
-import DropTransition from "@theme-hope/components/transitions/DropTransition";
+import { DropTransition } from "@theme-hope/components/transitions/index";
 import { useNavigate, useThemeLocaleData } from "@theme-hope/composables/index";
 import { TimelineIcon } from "@theme-hope/modules/blog/components/icons/index";
-import { useTimelines } from "@theme-hope/modules/blog/composables/index";
+import { useTimeline } from "@theme-hope/modules/blog/composables/index";
 
-import { ArticleInfoType } from "../../../../shared/index.js";
+import { PageInfo } from "../../../../shared/index.js";
 
 import "../styles/timeline-list.scss";
 
@@ -15,7 +16,7 @@ export default defineComponent({
 
   setup() {
     const themeLocale = useThemeLocaleData();
-    const timelines = useTimelines();
+    const timelines = useTimeline();
     const navigate = useNavigate();
 
     const hint = computed(() => themeLocale.value.blogLocales.timeline);
@@ -26,13 +27,15 @@ export default defineComponent({
           "div",
           {
             class: "timeline-list-title",
-            onClick: () => navigate(timelines.value.path),
+            onClick: () => {
+              navigate(timelines.value.path);
+            },
           },
           [
             h(TimelineIcon),
             h("span", { class: "num" }, timelines.value.items.length),
             hint.value,
-          ]
+          ],
         ),
         h("hr"),
         h(
@@ -55,20 +58,17 @@ export default defineComponent({
                         h("li", { class: "timeline-item" }, [
                           h("span", { class: "timeline-date" }, date),
                           h(
-                            RouterLink,
-                            {
-                              class: "timeline-title",
-                              to: path,
-                            },
-                            () => info[ArticleInfoType.title]
+                            RouteLink,
+                            { class: "timeline-title", to: path },
+                            () => info[PageInfo.title],
                           ),
-                        ])
-                      )
+                        ]),
+                      ),
                     ),
-                  ])
-              )
-            )
-          )
+                  ]),
+              ),
+            ),
+          ),
         ),
       ]);
   },

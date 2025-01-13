@@ -1,9 +1,11 @@
 import { container } from "@mdit/plugin-container";
-import { type PluginSimple } from "markdown-it";
-import type Token from "markdown-it/lib/token.js";
-import { utoa } from "vuepress-shared/node";
+import { demo } from "@mdit/plugin-demo";
+import { encodeData } from "@vuepress/helper";
+import type { PluginSimple } from "markdown-it";
+import type Token from "markdown-it/lib/token.mjs";
 
-import { type CodeDemoOptions } from "../../shared/index.js";
+import { escapeHtml } from "./utils.js";
+import type { CodeDemoOptions } from "../../shared/index.js";
 
 export const CODE_DEMO_DEFAULT_SETTING: CodeDemoOptions = {
   useBabel: false,
@@ -19,7 +21,7 @@ export const CODE_DEMO_DEFAULT_SETTING: CodeDemoOptions = {
 
 const getPlugin =
   (name: string): PluginSimple =>
-  (md) =>
+  (md) => {
     container(md, {
       name,
       openRender: (tokens: Token[], index: number): string => {
@@ -31,32 +33,66 @@ const getPlugin =
         for (let i = index; i < tokens.length; i++) {
           const { type, content, info } = tokens[i];
           const language = info
-            ? md.utils
-                .unescapeAll(info)
-                .trim()
-                .match(/^([^ :[{]+)/)?.[1] || "text"
+            ? (/^([^ :[{]+)/.exec(md.utils.unescapeAll(info).trim())?.[1] ??
+              "text")
             : "";
 
           if (type === `container_${name}_close`) break;
           if (!content) continue;
           if (type === "fence")
-            if (language === "json") config = utoa(content);
+            if (language === "json") config = encodeData(content);
             else code[language] = content;
         }
 
-        return `
-<CodeDemo id="code-demo-${index}" type="${name.split("-")[0]}"${
+        return `<CodeDemo id="code-demo-${index}" type="${name.split("-")[0]}"${
           title ? ` title="${encodeURIComponent(title)}"` : ""
-        }${config ? ` config="${config}"` : ""} code="${utoa(
-          JSON.stringify(code)
-        )}">
-`;
+        }${config ? ` config="${config}"` : ""} code="${encodeData(
+          JSON.stringify(code),
+        )}">\n`;
       },
-      closeRender: () => `</CodeDemo>`,
+      closeRender: () => `</CodeDemo>\n`,
     });
+  };
 
 export const normalDemo: PluginSimple = getPlugin("normal-demo");
 
 export const vueDemo: PluginSimple = getPlugin("vue-demo");
 
 export const reactDemo: PluginSimple = getPlugin("react-demo");
+
+export const mdDemo: PluginSimple = (md) => {
+  md.use(demo, {
+    name: "md-demo",
+    openRender: (tokens, index) =>
+      `<MdDemo title="${escapeHtml(
+        tokens[index].info,
+      )}" id="md-demo-${index}">\n`,
+    codeRender: (tokens, index, options, _env, self) => {
+      const token = tokens[index];
+
+      token.type = "fence";
+      token.info = "md";
+      token.markup = "```";
+      // Handle include rule
+      token.content = token.content
+        .split("\n")
+        .filter(
+          (item) =>
+            !item.startsWith("@") || !/^@include-p(?:ush\(.*\)|op)$/.test(item),
+        )
+        .join("\n");
+
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      return `<template #code>\n${self.rules.fence!(
+        tokens,
+        index,
+        options,
+        _env,
+        self,
+      )}</template>\n`;
+    },
+    contentOpenRender: () => `<template #default>\n`,
+    contentCloseRender: () => `</template>\n`,
+    closeRender: () => "</MdDemo>\n",
+  });
+};

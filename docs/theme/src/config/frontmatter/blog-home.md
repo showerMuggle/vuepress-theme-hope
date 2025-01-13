@@ -1,7 +1,7 @@
 ---
 title: Blog Home Frontmatter Config
 icon: blog
-order: 5
+order: 6
 category:
   - Config
 tag:
@@ -11,29 +11,44 @@ tag:
 
 ## home
 
-- Type: `boolean`
-- Default: `false`
+- Type: `true`
+- Details:
+  - [Blog → Blog HomePage](../../guide/blog/home.md#blog-style-homepage)
 
-Enable homepage style when setting to `true`
+Must be `true` to use blog home layout.
+
+## layout
+
+- Type: `"BlogHome"`
+- Details:
+  - [Blog → Blog HomePage](../../guide/blog/home.md#blog-style-homepage)
+
+Must be `BlogHome` to use blog home layout.
 
 ## title
 
 - Type: `string`
 - Required: No
+- Details:
+  - [Blog → Blog HomePage](../../guide/blog/home.md#blog-style-homepage)
 
 Page title, will be used in breadcrumb, seo, etc.
 
 ## heroText
 
-- Type: `string | false`
-- Default: `"Hello"`
+- Type: `string`
+- Default: Site title
+- Details:
+  - [Blog → Blog HomePage](../../guide/blog/home.md#blog-style-homepage)
 
-Hero Title
+Hero Title, can be set to an empty string to hide the default title.
 
 ## tagline
 
-- Type: `string | false`
-- Default: `"Welcome to your VuePress site"`
+- Type: `string`
+- Required: No
+- Details:
+  - [Blog → Blog HomePage](../../guide/blog/home.md#blog-style-homepage)
 
 Short description in hero
 
@@ -41,20 +56,37 @@ Short description in hero
 
 - Type: `string`
 - Required: No
+- Details:
+  - [Blog → Blog HomePage](../../guide/blog/home.md#blog-style-homepage)
+  - [FAQ → Links in Config](../../faq/common-question.md#links-in-config)
 
-Home hero (logo) image address, need to fill in the absolute path (pictures need to be placed in the `.vuepress/public` folder)
+Image link used as home hero (logo).
 
 ## heroImageDark
 
 - Type: `string`
-- Required: No
+- Default: `heroImage`
+- Details:
+  - [Blog → Blog HomePage](../../guide/blog/home.md#blog-style-homepage)
+  - [FAQ → Links in Config](../../faq/common-question.md#links-in-config)
 
-Darkmode Home hero (logo) image address, need to fill in the absolute path (pictures need to be placed in the `.vuepress/public` folder), will be the same as `heroImage` by default.
+Darkmode Home hero (logo) image link.
+
+## heroImageStyle
+
+- Type: `Record<string, string> | string`
+- Required: No
+- Details:
+  - [Blog → Blog HomePage](../../guide/blog/home.md#blog-style-homepage)
+
+CSS style for home hero (logo) image
 
 ## heroAlt
 
 - Type: `string`
 - Required: No
+- Details:
+  - [Blog → Blog HomePage](../../guide/blog/home.md#blog-style-homepage)
 
 Home icon alt text
 
@@ -62,27 +94,37 @@ Home icon alt text
 
 - Type: `string | false`
 - Default: A built-in picture
+- Details:
+  - [Blog → Blog HomePage](../../guide/blog/home.md#blog-style-homepage)
+  - [FAQ → Links in Config](../../faq/common-question.md#links-in-config)
 
-Link of background image, you must fill in absolute path of full path. If not filled in, a default landscape picture will be automatically applied.
+Link of background image, relative path is not supported.
+
+## bgImageDark
+
+- Type: `string`
+- Default: `bgImage`
+- Details:
+  - [Blog → Blog HomePage](../../guide/blog/home.md#blog-style-homepage)
+  - [FAQ → Links in Config](../../faq/common-question.md#links-in-config)
+
+Link of darkmode background image, relative path is not supported.
 
 ## bgImageStyle
 
 - Type: `Record<string, string> | string`
 - Required: No
+- Details:
+  - [Blog → Blog HomePage](../../guide/blog/home.md#blog-style-homepage)
 
 The CSS style of the background image.
-
-## heroImageStyle
-
-- Type: `Record<string, string> | string`
-- Required: No
-
-CSS style for home icon
 
 ## heroFullScreen
 
 - Type: `boolean`
 - Default: `false`
+- Details:
+  - [Blog → Blog HomePage](../../guide/blog/home.md#blog-style-homepage)
 
 Whether Hero is full screen displayed
 
@@ -117,5 +159,7 @@ Whether Hero is full screen displayed
   ```
 
 - Required: No
+- Details:
+  - [Blog → Blog HomePage](../../guide/blog/home.md#blog-style-homepage)
 
-Project list
+Project list displayed in blog homepage.

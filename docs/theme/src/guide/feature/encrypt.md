@@ -10,7 +10,7 @@ tag:
 
 The theme supports encryption of specific folders or specific paths, as well as global scope encryption.
 
-::: danger
+::: caution
 
 Note that because of the limitation of vuepress, the content of the article is only hidden before being decrypted, and visitors can still get the content of the article from the source code (from js).
 
@@ -24,33 +24,7 @@ Please **DO NOT USE** this encryption function for any sensitive and confidentia
 
 You can configure encryption options through the `encrypt.config` options in theme options.
 
-::: code-tabs#language
-
-@tab TS
-
-```ts
-// .vuepress/config.ts
-import { defineUserConfig } from "vuepress";
-import { hopeTheme } from "vuepress-theme-hope";
-
-export default defineUserConfig({
-  theme: hopeTheme({
-    encrypt: {
-      config: {
-        // This will encrypt the entire guide directory, and both passwords are available
-        "/guide/": ["1234", "5678"],
-        // This will only encrypt config/page.html
-        "/config/page.html": "1234",
-      },
-    },
-  }),
-};
-```
-
-@tab JS
-
-```js
-// .vuepress/config.js
+```js {8,10} title=".vuepress/config.js"
 import { hopeTheme } from "vuepress-theme-hope";
 
 export default {
@@ -59,15 +33,13 @@ export default {
       config: {
         // This will encrypt the entire guide directory, and both passwords are available
         "/guide/": ["1234", "5678"],
-        // This will only encrypt config/page.html
+        // This will only encrypt /config/page.html
         "/config/page.html": "1234",
       },
     },
   }),
 };
 ```
-
-:::
 
 ::: warning
 

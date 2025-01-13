@@ -1,4 +1,4 @@
-import { type ThemeLocaleData } from "../../shared/index.js";
+import type { ThemeLocaleData } from "../../shared/index.js";
 
 export const enLocale: ThemeLocaleData = {
   lang: "en-US",
@@ -36,6 +36,7 @@ export const enLocale: ThemeLocaleData = {
     all: "All",
     intro: "Personal Intro",
     star: "Star",
+    empty: "No $text",
   },
 
   paginationLocales: {
@@ -70,6 +71,5 @@ export const enLocale: ThemeLocaleData = {
     ],
     back: "Go back",
     home: "Take me home",
-    openInNewWindow: "Open in new window",
   },
 };

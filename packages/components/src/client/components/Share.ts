@@ -1,9 +1,11 @@
-import { type PageData, usePageData } from "@vuepress/client";
-import { type PropType, type VNode, computed, defineComponent, h } from "vue";
-import { isFunction, isPlainObject, isString } from "vuepress-shared/client";
+import { isFunction, isPlainObject, isString } from "@vuepress/helper/client";
+import type { PropType, VNode } from "vue";
+import { computed, defineComponent, h } from "vue";
+import type { PageData } from "vuepress/client";
+import { usePageData } from "vuepress/client";
 
 import ShareService from "./ShareService.js";
-import { type ShareServiceOptions } from "../../shared/share.js";
+import type { ShareServiceOptions } from "../../shared/share.js";
 
 declare const SHARE_SERVICES: ShareServiceOptions[];
 
@@ -72,7 +74,7 @@ export default defineComponent({
       }: PageData<
         Record<never, never>,
         { tag?: string | string[]; tags?: string | string[] }
-      >) => frontmatter["tag"] || frontmatter["tags"],
+      >) => frontmatter.tag ?? frontmatter.tags,
     },
 
     /**
@@ -100,9 +102,9 @@ export default defineComponent({
             ? item.name && item.link
               ? item
               : null
-            : shareServices.find(({ name }) => name === item)
+            : shareServices.find(({ name }) => name === item),
         )
-        .filter((item): item is ShareServiceOptions => item != null);
+        .filter((item): item is ShareServiceOptions => Boolean(item));
     });
 
     const shareData = computed(() => {
@@ -127,11 +129,11 @@ export default defineComponent({
       return result;
     });
 
-    return (): VNode => {
-      return h(
+    return (): VNode =>
+      h(
         "div",
         {
-          class: "share-wrapper",
+          class: "vp-share-buttons",
           style: props.inline ? { display: "inline-block" } : {},
         },
         service.value.map((item) =>
@@ -139,9 +141,8 @@ export default defineComponent({
             config: item,
             ...shareData.value,
             plain: !props.colorful,
-          })
-        )
+          }),
+        ),
       );
-    };
   },
 });

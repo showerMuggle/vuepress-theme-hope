@@ -1,26 +1,24 @@
-import { bundle } from "../../scripts/rollup.js";
+import { rollupBundle } from "../../scripts/rollup.js";
 
 export default [
-  ...bundle("node/index", {
+  ...rollupBundle("node/index", {
     resolve: true,
-    external: [
+    external: ["node:http", "@vuepress/helper", "vuepress/utils"],
+    dtsExternal: [
       "node:http",
-      "@vuepress/utils",
-      "cheerio",
-      "execa",
-      "fflate/node",
-      "gray-matter",
-      "semver",
-      "striptags",
+      "@vuepress/helper",
+      "vuepress/core",
+      "vuepress/shared",
     ],
-    dtsExternal: ["node:http"],
   }),
-  ...bundle(
-    { base: "client", files: ["index", "noopModule"] },
-    {
-      resolve: true,
-      external: ["@vuepress/client", "fflate/browser", "vue", "vue-router"],
-      copy: [["client/styles", "client"]],
-    }
-  ),
+  ...rollupBundle("client/index", {
+    resolve: true,
+    external: ["@vuepress/helper/client", "vuepress/client", "vue"],
+    copy: [["client/styles", "client"]],
+    dtsExternal: [
+      "@vuepress/helper/client",
+      "vuepress/client",
+      "vuepress/shared",
+    ],
+  }),
 ];

@@ -1,62 +1,86 @@
+import { isString } from "@vuepress/helper/client";
+import type { SlotsType, VNode } from "vue";
+import { computed, defineComponent, h, shallowRef } from "vue";
 import {
   usePageFrontmatter,
-  usePageHeadTitle,
+  useSiteLocaleData,
   withBase,
-} from "@vuepress/client";
-import { isString } from "@vuepress/shared";
-import { type VNode, computed, defineComponent, h, ref } from "vue";
+} from "vuepress/client";
 
-import DropTransition from "@theme-hope/components/transitions/DropTransition";
+import { DropTransition } from "@theme-hope/components/transitions/index";
+import { SlideDownIcon } from "@theme-hope/modules/blog/components/icons/index";
 
-import { SlideDownIcon } from "./icons/icons.js";
-import { type ThemeBlogHomePageFrontmatter } from "../../../../shared/index.js";
-import defaultHeroBgImagePath from "../assets/hero.jpg";
+import type { ThemeBlogHomePageFrontmatter } from "../../../../shared/index.js";
 
 import "../styles/blog-hero.scss";
+
+export interface HeroInfoData {
+  text: string | null;
+  tagline: string | null;
+  image: string | null;
+  imageDark: string | null;
+  alt: string;
+  imageStyle: string | Record<string, string> | undefined;
+  isFullScreen: boolean;
+}
+
+export interface HeroBackgroundData {
+  image: string | null;
+  bgStyle: string | Record<string, string> | undefined;
+  isFullScreen: boolean;
+}
+
+const DEFAULT_HERO = "//theme-hope-assets.vuejs.press/hero/default.jpg";
 
 export default defineComponent({
   name: "BlogHero",
 
-  setup(_props, { slots }) {
-    const title = usePageHeadTitle();
-    const frontmatter = usePageFrontmatter<ThemeBlogHomePageFrontmatter>();
+  slots: Object as SlotsType<{
+    bg?: (props: HeroBackgroundData) => VNode[] | VNode | null;
+    info?: (props: HeroInfoData) => VNode[] | VNode | null;
+  }>,
 
-    const hero = ref<HTMLElement>();
+  setup(_props, { slots }) {
+    const frontmatter = usePageFrontmatter<ThemeBlogHomePageFrontmatter>();
+    const siteLocale = useSiteLocaleData();
+
+    const hero = shallowRef<HTMLElement>();
 
     const isFullScreen = computed(
-      () => frontmatter.value.heroFullScreen ?? false
+      () => frontmatter.value.heroFullScreen ?? false,
     );
 
-    const heroInfo = computed(() => {
+    const info = computed(() => {
       const {
         heroText,
         heroImage,
         heroImageDark,
         heroAlt,
         heroImageStyle,
-        tagline = null,
+        tagline,
       } = frontmatter.value;
 
       return {
-        text: heroText === false ? null : heroText || title.value,
+        text: heroText ?? (siteLocale.value.title || "Hello"),
+        tagline: tagline ?? "",
         image: heroImage ? withBase(heroImage) : null,
         imageDark: heroImageDark ? withBase(heroImageDark) : null,
-        heroStyle: heroImageStyle,
-        alt: heroAlt || "hero image",
-        tagline,
+        alt: heroAlt ?? heroText ?? "",
+        imageStyle: heroImageStyle,
         isFullScreen: isFullScreen.value,
       };
     });
 
-    const bgInfo = computed(() => {
-      const { bgImage, bgImageStyle } = frontmatter.value;
+    const bg = computed(() => {
+      const { bgImage, bgImageDark, bgImageStyle } = frontmatter.value;
 
       return {
         image: isString(bgImage)
           ? withBase(bgImage)
           : bgImage === false
-          ? null
-          : defaultHeroBgImagePath,
+            ? null
+            : DEFAULT_HERO,
+        imageDark: isString(bgImageDark) ? withBase(bgImageDark) : null,
         bgStyle: bgImageStyle,
         isFullScreen: isFullScreen.value,
       };
@@ -70,67 +94,82 @@ export default defineComponent({
             {
               ref: hero,
               class: [
-                "blog-hero",
+                "vp-blog-hero",
                 {
                   fullscreen: isFullScreen.value,
-                  "no-bg": !bgInfo.value.image,
+                  "no-bg": !bg.value.image,
                 },
               ],
             },
             [
-              slots["heroBg"]?.(bgInfo.value) ||
-                (bgInfo.value.image
+              slots.bg?.(bg.value) ?? [
+                bg.value.image
                   ? h("div", {
-                      class: "mask",
+                      class: ["vp-blog-mask", { light: bg.value.imageDark }],
                       style: [
                         {
-                          background: `url(${bgInfo.value.image}) center/cover no-repeat`,
+                          background: `url(${bg.value.image}) center/cover no-repeat`,
                         },
-                        bgInfo.value.bgStyle,
+                        bg.value.bgStyle,
                       ],
                     })
-                  : null),
-              slots["heroInfo"]?.(heroInfo.value) || [
+                  : null,
+                bg.value.imageDark
+                  ? h("div", {
+                      class: "vp-blog-mask dark",
+                      style: [
+                        {
+                          background: `url(${bg.value.imageDark}) center/cover no-repeat`,
+                        },
+                        bg.value.bgStyle,
+                      ],
+                    })
+                  : null,
+              ],
+              slots.info?.(info.value) ?? [
                 h(
                   DropTransition,
                   { appear: true, type: "group", delay: 0.04 },
-                  () => [
-                    heroInfo.value.image
-                      ? h("img", {
-                          key: "light",
-                          class: [
-                            "hero-image",
-                            { light: heroInfo.value.imageDark },
-                          ],
-                          style: heroInfo.value.heroStyle,
-                          src: heroInfo.value.image,
-                          alt: heroInfo.value.alt,
-                        })
-                      : null,
-                    heroInfo.value.imageDark
-                      ? h("img", {
-                          key: "dark",
-                          class: "hero-image dark",
-                          style: heroInfo.value.heroStyle,
-                          src: heroInfo.value.imageDark,
-                          alt: heroInfo.value.alt,
-                        })
-                      : null,
-                  ]
+                  () => {
+                    const { image, imageDark, imageStyle, alt } = info.value;
+
+                    return [
+                      image
+                        ? h("img", {
+                            key: "light",
+                            class: ["vp-blog-hero-image", { light: imageDark }],
+                            style: imageStyle,
+                            src: image,
+                            alt: alt,
+                          })
+                        : null,
+                      imageDark
+                        ? h("img", {
+                            key: "dark",
+                            class: "vp-blog-hero-image dark",
+                            style: imageStyle,
+                            src: imageDark,
+                            alt: alt,
+                          })
+                        : null,
+                    ];
+                  },
                 ),
                 h(DropTransition, { appear: true, delay: 0.08 }, () =>
-                  heroInfo.value.text ? h("h1", heroInfo.value.text) : null
+                  info.value.text
+                    ? h("h1", { class: "vp-blog-hero-title" }, info.value.text)
+                    : null,
                 ),
                 h(DropTransition, { appear: true, delay: 0.12 }, () =>
-                  heroInfo.value.tagline
+                  info.value.tagline
                     ? h("p", {
-                        class: "description",
-                        innerHTML: heroInfo.value.tagline,
+                        class: "vp-blog-hero-description",
+                        innerHTML: info.value.tagline,
                       })
-                    : null
+                    : null,
                 ),
               ],
-              heroInfo.value.isFullScreen
+              info.value.isFullScreen
                 ? h(
                     "button",
                     {
@@ -138,15 +177,16 @@ export default defineComponent({
                       class: "slide-down-button",
                       onClick: () => {
                         window.scrollTo({
+                          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                           top: hero.value!.clientHeight,
                           behavior: "smooth",
                         });
                       },
                     },
-                    [h(SlideDownIcon), h(SlideDownIcon)]
+                    [h(SlideDownIcon), h(SlideDownIcon)],
                   )
                 : null,
-            ]
+            ],
           );
   },
 });

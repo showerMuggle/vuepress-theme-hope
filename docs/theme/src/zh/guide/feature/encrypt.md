@@ -10,7 +10,7 @@ tag:
 
 主题支持对特定文件夹或特定的路径进行加密，也支持进行全局范围的加密。
 
-::: danger
+::: caution
 
 注意，受到 VuePress 的限制，在未解密前，文章内容仅仅被隐藏，访问者仍可以从源码中获取文章的内容。
 
@@ -26,33 +26,7 @@ tag:
 
 字段的键名是路径，值支持填入一个或多个数组格式的密码。
 
-::: code-tabs#language
-
-@tab TS
-
-```ts
-// .vuepress/config.ts
-import { defineUserConfig } from "vuepress";
-import { hopeTheme } from "vuepress-theme-hope";
-
-export default defineUserConfig({
-  theme: hopeTheme({
-    encrypt: {
-      config: {
-        // 这会加密整个 guide 目录，并且两个密码都是可用的
-        "/guide/": ["1234", "5678"],
-        // 这只会加密 config/page.html
-        "/config/page.html": "1234",
-      },
-    },
-  }),
-});
-```
-
-@tab JS
-
-```js
-// .vuepress/config.js
+```js {8,10} title=".vuepress/config.js"
 import { hopeTheme } from "vuepress-theme-hope";
 
 export default {
@@ -61,15 +35,13 @@ export default {
       config: {
         // 这会加密整个 guide 目录，并且两个密码都是可用的
         "/guide/": ["1234", "5678"],
-        // 这只会加密 config/page.html
+        // 这只会加密 /config/page.html
         "/config/page.html": "1234",
       },
     },
   }),
 };
 ```
-
-:::
 
 ::: warning
 

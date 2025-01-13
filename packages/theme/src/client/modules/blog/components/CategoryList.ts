@@ -1,9 +1,12 @@
-import { usePageData } from "@vuepress/client";
-import { type VNode, defineComponent, h } from "vue";
-import { RouterLink } from "vue-router";
-import { entries, generateIndexFromHash } from "vuepress-shared/client";
+import { entries } from "@vuepress/helper/client";
+import type { VNode } from "vue";
+import { defineComponent, h } from "vue";
+import { RouteLink, usePageData } from "vuepress/client";
+import { generateIndexFromHash } from "vuepress-shared/client";
 
 import { useCategoryMap } from "@theme-hope/modules/blog/composables/index";
+
+import cssVariables from "../../../styles/variables.module.scss";
 
 import "../styles/category-list.scss";
 
@@ -17,24 +20,26 @@ export default defineComponent({
     return (): VNode =>
       h(
         "ul",
-        { class: "category-list-wrapper" },
-        entries(categoryMap.value.map).map(([category, { path, items }]) =>
-          h(
-            "li",
-            {
-              class: [
-                "category",
-                // TODO: magic number 9 is tricky here
-                `category${generateIndexFromHash(category, 9)}`,
-                { active: path === page.value.path },
-              ],
-            },
-            h(RouterLink, { to: path }, () => [
-              category,
-              h("span", { class: "category-num" }, items.length),
-            ])
-          )
-        )
+        { class: "vp-category-list" },
+        entries(categoryMap.value.map)
+          // Sort from more to less
+          .sort(([, a], [, b]) => b.items.length - a.items.length)
+          .map(([category, { path, items }]) =>
+            h(
+              "li",
+              {
+                class: [
+                  "vp-category",
+                  `color${generateIndexFromHash(category, Number(cssVariables.colorNumber))}`,
+                  { active: path === page.value.path },
+                ],
+              },
+              h(RouteLink, { to: path }, () => [
+                category,
+                h("span", { class: "vp-category-count" }, items.length),
+              ]),
+            ),
+          ),
       );
   },
 });

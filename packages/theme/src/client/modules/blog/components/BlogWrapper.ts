@@ -1,4 +1,5 @@
-import { type VNode, defineComponent, h } from "vue";
+import type { SlotsType, VNode } from "vue";
+import { defineComponent, h } from "vue";
 
 import CommonWrapper from "@theme-hope/components/CommonWrapper";
 import SkipLink from "@theme-hope/components/SkipLink";
@@ -11,6 +12,10 @@ import "../styles/page.scss";
 export default defineComponent({
   name: "BlogWrapper",
 
+  slots: Object as SlotsType<{
+    default: () => VNode[] | VNode | null;
+  }>,
+
   setup(_props, { slots }) {
     const { isMobile } = useWindowSize();
 
@@ -18,12 +23,14 @@ export default defineComponent({
       h(SkipLink),
       h(
         CommonWrapper,
-        { noSidebar: true },
+        { noSidebar: true, noToc: true },
         {
-          default: () => slots["default"]?.(),
+          default: () => slots.default(),
           navScreenBottom: () => h(BloggerInfo),
-          ...(isMobile.value ? { sidebar: () => h(InfoList) } : {}),
-        }
+          sidebar: isMobile.value
+            ? (): VNode | VNode[] | null => h(InfoList)
+            : null,
+        },
       ),
     ];
   },

@@ -1,33 +1,34 @@
 import { get } from "node:https";
 
-import { type PackageManager } from "./packageManager.js";
+import type { PackageManager } from "../config/index.js";
 
-export const getNextVersion = async (
+export const getVersion = async (
   packageManager: PackageManager,
-  packageName: string
+  packageName: string,
+  tag = "latest",
 ): Promise<string> => {
   const getVersionInfo = (): Promise<string> =>
     new Promise((resolve, reject) => {
       get(
         `${
-          packageManager === "npm"
-            ? "https://registry.npmjs.org"
-            : "https://registry.yarnpkg.com"
+          packageManager === "yarn"
+            ? "https://registry.yarnpkg.com"
+            : "https://registry.npmjs.org"
         }/-/package/${packageName}/dist-tags`,
         (res) => {
           if (res.statusCode === 200) {
             let body = "";
 
-            res.on("data", (data) => (body += data));
+            res.on("data", (data: string) => (body += data));
             res.on("end", () => {
-              resolve((<{ next: string }>JSON.parse(body)).next);
+              resolve((JSON.parse(body) as Record<string, string>)[tag]);
             });
           } else {
-            reject();
+            reject(new Error("fetch failed"));
           }
-        }
+        },
       ).on("error", () => {
-        reject();
+        reject(new Error("fetch failed"));
       });
     });
 

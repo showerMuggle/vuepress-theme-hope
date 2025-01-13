@@ -15,21 +15,15 @@ The following options control theme layout.
 
 ## Navbar Config
 
-For related guide, please see [Layout → Navbar](../../guide/layout/navbar.md).
-
 ### navbar <Badge text="Recommended" type="tip" />
 
 - Type: `NavbarConfig | false`
 - Default: `false`
+- Details:
+  - [Layout → Navbar → Navbar links](../../guide/layout/navbar.md#navbar-links)
+  - [Layout → Navbar → Disable Navbar](../../guide/layout/navbar.md#disabling-navbar)
 
-Navbar config
-
-### navbarIcon
-
-- Type: `boolean`
-- Default: `true`
-
-Whether display icons in navbar.
+Navbar config.
 
 ### navbarLayout
 
@@ -37,7 +31,7 @@ Whether display icons in navbar.
 
   ```ts
   /**
-   * Navbar component
+   * Built-in Navbar component
    */
   type NavbarComponent =
     | "Brand"
@@ -58,6 +52,8 @@ Whether display icons in navbar.
   ```
 
 - Default: `{ start: ["Brand"], center: ["Links"], end: ["Language", "Repo", "Outlook", "Search"] }`
+- Details:
+  - [Layout → Navbar → Navbar layout](../../guide/layout/navbar.md#layout-config)
 
 Customize navbar layout.
 
@@ -71,9 +67,16 @@ Navbar logo, should be absolute path relative to `.vuepress/public` folder.
 ### logoDark
 
 - Type: `string`
-- Required: No
+- Default: `logo`
 
 Navbar logo in darkmode, should be absolute path relative to `.vuepress/public` folder.
+
+### navbarTitle
+
+- Type: `string`
+- Default: `$siteLocale.title`
+
+Navbar title, you can set it to an empty string to hide it.
 
 ### repo
 
@@ -122,17 +125,10 @@ For guide, see [Layout → Sidebar](../../guide/layout/sidebar.md).
 
 ### sidebar <Badge text="Recommended" type="tip" />
 
-- Type: `SidebarConfig | "structure" | "heading" | false`
+- Type: `SidebarConfig | "structure" | false`
 - Default: `"structure"`
 
 Sidebar Config.
-
-### sidebarIcon
-
-- Type: `boolean`
-- Default: `true`
-
-Whether show icons in the sidebar
 
 ### sidebarSorter <Badge text="Root only" type="warning" />
 
@@ -181,7 +177,7 @@ Whether show icons in the sidebar
 
   type SidebarSorterFunction = (
     infoA: SidebarInfo,
-    infoB: SidebarInfo
+    infoB: SidebarInfo,
   ) => number;
 
   type SidebarSorter =
@@ -215,7 +211,7 @@ Available keywords are:
 - Type: `number`
 - Default: `2`
 
-Nested headings depth in sidebar
+Nested headings depth
 
 ## Route Navigation
 
@@ -335,7 +331,7 @@ Docs dir location in repo
 ### footer
 
 - Type: `string`
-- Required: false
+- Required: No
 
 The default content for the footer, can accept HTMLString.
 
@@ -374,4 +370,4 @@ Whether to use RTL layout.
 - Type: `boolean`
 - Default: `true`
 
-Whether show toc list in desktop mode.
+Whether show toc list.

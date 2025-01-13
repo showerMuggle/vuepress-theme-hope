@@ -1,29 +1,12 @@
-import { type LocaleConfig } from "@vuepress/core";
+import type { LocaleConfig } from "vuepress/shared";
 
-import {
-  type BackToTopLocaleData,
-  type CatalogLocaleData,
-  type PDFLocaleData,
-  type SiteInfoLocaleData,
+import type {
+  PDFLocaleData,
+  SiteInfoLocaleData,
+  VidstackLocaleData,
 } from "../../shared/index.js";
 
 export interface ComponentLocaleOptions {
-  /**
-   * backToTop button Locales config
-   *
-   * 返回顶部按钮国际化配置
-   */
-  backToTop?: LocaleConfig<BackToTopLocaleData>;
-
-  /**
-   * @deprecated
-   *
-   * Catalog Locales config
-   *
-   * 目录组件国际化配置
-   */
-  catalog?: LocaleConfig<CatalogLocaleData>;
-
   /**
    * PDF Locales config
    *
@@ -37,4 +20,11 @@ export interface ComponentLocaleOptions {
    * 站点信息 组件国际化配置
    */
   siteInfo?: LocaleConfig<SiteInfoLocaleData>;
+
+  /**
+   * VidStack Locales config
+   *
+   * VidStack 组件国际化配置
+   */
+  vidstack?: LocaleConfig<VidstackLocaleData>;
 }

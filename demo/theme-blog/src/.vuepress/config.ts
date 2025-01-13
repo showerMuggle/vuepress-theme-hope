@@ -1,9 +1,10 @@
-import { defineUserConfig } from "@vuepress/cli";
-import { getDirname, path } from "@vuepress/utils";
+import { defineUserConfig } from "vuepress";
+import { getDirname, path } from "vuepress/utils";
+
 import theme from "./theme.js";
 
 const __dirname = getDirname(import.meta.url);
-const base = <"/" | `/${string}/`>process.env["BASE"] || "/";
+const base = (process.env.BASE as "/" | `/${string}/` | undefined) ?? "/";
 
 export default defineUserConfig({
   base,
@@ -30,7 +31,7 @@ export default defineUserConfig({
   alias: {
     "@theme-hope/modules/blog/components/BlogHero": path.resolve(
       __dirname,
-      "./components/BlogHero.vue"
+      "./components/BlogHero.vue",
     ),
   },
 });

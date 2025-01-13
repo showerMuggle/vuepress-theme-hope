@@ -1,4 +1,4 @@
-import { type NavbarOptions } from "../../navbar.js";
+import type { NavbarOptions } from "../../navbar.js";
 
 export interface NavbarLocaleData {
   /**
@@ -35,9 +35,9 @@ export type NavbarComponent =
  * 导航栏布局选项
  */
 export interface NavbarLayoutOptions {
-  start?: (NavbarComponent | string)[];
-  center?: (NavbarComponent | string)[];
-  end?: (NavbarComponent | string)[];
+  start?: string[];
+  center?: string[];
+  end?: string[];
 }
 
 export interface NavbarLocaleOptions {
@@ -79,6 +79,15 @@ export interface NavbarLocaleOptions {
   logoDark?: string;
 
   /**
+   * Navbar title
+   *
+   * 导航栏标题
+   *
+   * @default $siteLocale.title
+   */
+  navbarTitle?: string;
+
+  /**
    * Repository link
    *
    * 仓库链接
@@ -100,15 +109,6 @@ export interface NavbarLocaleOptions {
    * 导航栏仓库按钮的无障碍标签
    */
   repoLabel?: string;
-
-  /**
-   * Whether show icon in navbar
-   *
-   * 是否在导航栏中显示图标
-   *
-   * @default true
-   */
-  navbarIcon?: boolean;
 
   /**
    * Whether to hide navbar when scrolling down

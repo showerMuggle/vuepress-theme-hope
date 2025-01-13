@@ -1,25 +1,11 @@
-import { useSiteData } from "@vuepress/client";
-import { ExternalLinkIcon } from "@vuepress/plugin-external-link-icon/client";
-import { isLinkHttp, isLinkMailto, isLinkTel } from "@vuepress/shared";
-import {
-  type PropType,
-  type VNode,
-  computed,
-  defineComponent,
-  h,
-  toRef,
-} from "vue";
-import { RouterLink, useRoute } from "vue-router";
-import { keys, startsWith } from "vuepress-shared/client";
+import type { PropType, SlotsType, VNode } from "vue";
+import { defineComponent, h, resolveComponent } from "vue";
+import { AutoLink } from "vuepress/client";
 
-import HopeIcon from "@theme-hope/components/HopeIcon";
-
-import { type AutoLinkOptions } from "../../shared/index.js";
+import type { AutoLinkOptions } from "../../shared/index.js";
 
 export default defineComponent({
   name: "AutoLink",
-
-  inheritAttrs: false,
 
   props: {
     /**
@@ -29,131 +15,38 @@ export default defineComponent({
       type: Object as PropType<AutoLinkOptions>,
       required: true,
     },
-
-    /**
-     * @description Whether it's active only when exact match
-     */
-    exact: Boolean,
-
-    /**
-     * @description Whether to hide externalLinkIcon
-     */
-    noExternalLinkIcon: Boolean,
   },
 
   emits: ["focusout"],
 
-  setup(props, { attrs, emit, slots }) {
-    const route = useRoute();
-    const siteData = useSiteData();
+  slots: Object as SlotsType<{
+    before?: () => VNode[] | VNode | null;
+    after?: () => VNode[] | VNode | null;
+    default?: () => VNode[] | VNode;
+  }>,
 
-    const config = toRef(props, "config");
-
-    // if the link has http protocol
-    const hasHttpProtocol = computed(() => isLinkHttp(config.value.link));
-
-    // if the link has non-http protocol
-    const hasNonHttpProtocol = computed(
-      () => isLinkMailto(config.value.link) || isLinkTel(config.value.link)
-    );
-
-    // resolve the `target` attr
-    const linkTarget = computed(() =>
-      hasNonHttpProtocol.value
-        ? undefined
-        : config.value.target || (hasHttpProtocol.value ? "_blank" : undefined)
-    );
-
-    // if the `target` attr is "_blank"
-    const isBlankTarget = computed(() => linkTarget.value === "_blank");
-
-    // render `<RouterLink>` or not
-    const renderRouterLink = computed(
-      () =>
-        !hasHttpProtocol.value &&
-        !hasNonHttpProtocol.value &&
-        !isBlankTarget.value
-    );
-
-    // resolve the `rel` attr
-    const anchorRel = computed(() =>
-      hasNonHttpProtocol.value
-        ? undefined
-        : config.value.rel ||
-          (isBlankTarget.value ? "noopener noreferrer" : undefined)
-    );
-
-    // resolve the `aria-label` attr
-    const linkAriaLabel = computed(
-      () => config.value.ariaLabel || config.value.text
-    );
-
-    // should be active when current route is a subpath of this link
-    const shouldBeActiveInSubpath = computed(() => {
-      // should not be active in `exact` mode
-      if (props.exact) return false;
-
-      const localeKeys = keys(siteData.value.locales);
-
-      return localeKeys.length
-        ? // check all the locales
-          localeKeys.every((key) => key !== config.value.link)
-        : // check root
-          config.value.link !== "/";
-    });
-
-    // if this link is active
-    const isActive = computed(() =>
-      renderRouterLink.value
-        ? config.value.activeMatch
-          ? new RegExp(config.value.activeMatch).test(route.path)
-          : // if this link is active in subpath
-          !shouldBeActiveInSubpath.value
-          ? route.path === config.value.link
-          : startsWith(route.path, config.value.link)
-        : false
-    );
-
+  setup(props, { emit, slots }) {
     return (): VNode => {
-      const { text, icon, link } = config.value;
+      const { icon } = props.config;
 
-      return renderRouterLink.value
-        ? h(
-            RouterLink,
-            {
-              to: link,
-              "aria-label": linkAriaLabel.value,
-              ...attrs,
-              // class needs to be merged manually
-              class: ["nav-link", { active: isActive.value }, attrs["class"]],
-              onFocusout: () => emit("focusout"),
-            },
-            () =>
-              slots["default"]?.() || [
-                slots["before"]?.() || h(HopeIcon, { icon }),
-                text,
-                slots["after"]?.(),
-              ]
-          )
-        : h(
-            "a",
-            {
-              href: link,
-              rel: anchorRel.value,
-              target: linkTarget.value,
-              "aria-label": linkAriaLabel.value,
-              ...attrs,
-              // class needs to be merged manually
-              class: ["nav-link", attrs["class"]],
-              onFocusout: () => emit("focusout"),
-            },
-            slots["default"]?.() || [
-              slots["before"]?.() || h(HopeIcon, { icon }),
-              text,
-              props.noExternalLinkIcon ? null : h(ExternalLinkIcon),
-              slots["after"]?.(),
-            ]
-          );
+      return h(
+        AutoLink,
+        {
+          ...props, // Class needs to be merged manually
+          onFocusout: () => {
+            emit("focusout");
+          },
+        },
+        {
+          default: slots.default,
+          before:
+            slots.before ??
+            (icon
+              ? (): VNode | null => h(resolveComponent("VPIcon"), { icon })
+              : null),
+          after: slots.after,
+        },
+      );
     };
   },
 });

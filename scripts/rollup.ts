@@ -1,15 +1,16 @@
-import alias, { type Alias } from "@rollup/plugin-alias";
+import type { Alias } from "@rollup/plugin-alias";
+import alias from "@rollup/plugin-alias";
 import commonjs from "@rollup/plugin-commonjs";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
-import replace, { type RollupReplaceOptions } from "@rollup/plugin-replace";
-import { type ModuleSideEffectsOption, type RollupOptions } from "rollup";
+import type { RollupReplaceOptions } from "@rollup/plugin-replace";
+import replace from "@rollup/plugin-replace";
+import type { ModuleSideEffectsOption, RollupOptions } from "rollup";
 import copy from "rollup-plugin-copy";
-import dts from "rollup-plugin-dts";
+import { dts } from "rollup-plugin-dts";
 import esbuild from "rollup-plugin-esbuild";
+import { shebang } from "rollup-plugin-resolve-shebang";
 
-import { shebangPlugin } from "./shebang.js";
-
-const isProduction = process.env["NODE_ENV"] === "production";
+const isProduction = process.env.NODE_ENV === "production";
 
 export interface FileInfo {
   base: string;
@@ -27,11 +28,11 @@ export interface BundleOptions {
   inlineDynamicImports?: boolean;
   preserveShebang?: boolean;
   replace?: RollupReplaceOptions;
-  alias?: Alias[] | { [find: string]: string };
+  alias?: Alias[] | Record<string, string>;
   moduleSideEffects?: ModuleSideEffectsOption;
 }
 
-export const bundle = (
+export const rollupBundle = (
   filePath: string | FileInfo,
   {
     dts: enableDts = typeof filePath === "object"
@@ -50,7 +51,7 @@ export const bundle = (
     replace: replaceOptions,
     moduleSideEffects = (id): boolean =>
       id.endsWith(".css") || id.endsWith(".scss"),
-  }: BundleOptions = {}
+  }: BundleOptions = {},
 ): RollupOptions[] => [
   {
     input:
@@ -59,7 +60,7 @@ export const bundle = (
             filePath.files.map((item) => [
               item,
               `./src/${filePath.base}/${item}.ts`,
-            ])
+            ]),
           )
         : `./src/${filePath}.ts`,
 
@@ -67,7 +68,7 @@ export const bundle = (
       {
         ...(typeof filePath === "object"
           ? {
-              dir: `./lib/${filePath.target || filePath.base}`,
+              dir: `./lib/${filePath.target ?? filePath.base}`,
               entryFileNames: "[name].js",
             }
           : { file: `./lib/${filePath}.js` }),
@@ -81,79 +82,76 @@ export const bundle = (
 
     plugins: [
       typeof replaceOptions === "object"
-        ? (replace as unknown as typeof replace.default)({
+        ? replace({
             preventAssignment: true,
             ...replaceOptions,
           })
         : null,
       entries
-        ? // FIXME: This is an issue of ts NodeNext
-          (alias as unknown as typeof alias.default)({
+        ? alias({
             entries,
           })
         : null,
-      preserveShebang ? shebangPlugin() : null,
-      ...(resolve
-        ? [
-            nodeResolve({ preferBuiltins: true }),
-            // FIXME: This is an issue of ts NodeNext
-            (commonjs as unknown as typeof commonjs.default)(),
-          ]
-        : []),
-      // FIXME: This is an issue of ts NodeNext
-      (esbuild as unknown as typeof esbuild.default)({
+      preserveShebang ? shebang() : null,
+      ...(resolve ? [nodeResolve({ preferBuiltins: true }), commonjs()] : []),
+      esbuild({
         charset: "utf8",
         minify: isProduction,
-        target: "node14",
+        target: "node18",
+        loaders: {
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          ".json": "json",
+        },
       }),
       copyOptions.length
-        ? // FIXME: This is an issue of ts NodeNext
-          (copy as unknown as typeof copy.default)({
+        ? copy({
             targets: copyOptions.map((item) =>
               typeof item === "string"
                 ? { src: `./src/${item}`, dest: `./lib/${item}` }
-                : { src: `./src/${item[0]}`, dest: `./lib/${item[1]}` }
+                : { src: `./src/${item[0]}`, dest: `./lib/${item[1]}` },
             ),
           })
         : null,
     ],
 
     external: [
-      ...(resolve
+      resolve
         ? []
         : (
-            typeof filePath === "object"
-              ? filePath.base.startsWith("client")
-              : filePath.startsWith("client/")
-          )
-        ? [
-            /^@temp/,
-            "@vueuse/core",
-            "@vuepress/client",
-            "@vuepress/shared",
-            "vue",
-            "vue-router",
-            "vuepress-shared/client",
-            /\.s?css$/,
-          ]
-        : (
-            typeof filePath === "object"
-              ? filePath.base.startsWith("node") ||
-                filePath.base.startsWith("cli")
-              : filePath.startsWith("node/") || filePath.startsWith("cli/")
-          )
-        ? [
-            /^node:/,
-            "@vuepress/core",
-            "@vuepress/shared",
-            /^@vuepress\/plugin-/,
-            "@vuepress/utils",
-            /^vuepress-plugin-/,
-            "vuepress-shared/node",
-          ]
-        : []),
-      ...external,
-    ],
+              typeof filePath === "object"
+                ? filePath.base.startsWith("client")
+                : filePath.startsWith("client/")
+            )
+          ? [
+              /^@temp/,
+              "@vuepress/helper/client",
+              "@vueuse/core",
+              "vue",
+              "vuepress/client",
+              "vuepress/shared",
+              "vuepress-shared/client",
+              /\.s?css$/,
+            ]
+          : (
+                typeof filePath === "object"
+                  ? filePath.base.startsWith("node") ||
+                    filePath.base.startsWith("cli")
+                  : filePath.startsWith("node/") || filePath.startsWith("cli/")
+              )
+            ? [
+                /^node:/,
+                "@vuepress/helper",
+                /^@vuepress\/plugin-/,
+                "vuepress/cli",
+                "vuepress/core",
+                "vuepress/shared",
+                "vuepress/utils",
+                /^vuepress-plugin-/,
+                "vuepress-shared/node",
+              ]
+            : [],
+      external,
+    ].flat(),
 
     treeshake: {
       moduleSideEffects,
@@ -169,14 +167,14 @@ export const bundle = (
                   filePath.files.map((item) => [
                     item,
                     `./src/${filePath.base}/${item}.ts`,
-                  ])
+                  ]),
                 )
               : `./src/${filePath}.ts`,
           output: [
             {
               ...(typeof filePath === "object"
                 ? {
-                    dir: `./lib/${filePath.target || filePath.base}`,
+                    dir: `./lib/${filePath.target ?? filePath.base}`,
                     entryFileNames: "[name].d.ts",
                   }
                 : { file: `./lib/${filePath}.d.ts` }),
@@ -186,8 +184,7 @@ export const bundle = (
           ],
           plugins: [
             entries
-              ? // FIXME: This is an issue of ts NodeNext
-                (alias as unknown as typeof alias.default)({
+              ? alias({
                   entries,
                 })
               : null,
@@ -198,23 +195,36 @@ export const bundle = (
             }),
           ],
           external: [
-            ...(resolve
+            resolve
               ? []
               : (
-                  typeof filePath === "object"
-                    ? filePath.base.startsWith("client")
-                    : filePath.startsWith("client/")
-                )
-              ? [/^@temp/, "vuepress-shared/client", /\.s?css$/]
-              : (
-                  typeof filePath === "object"
-                    ? filePath.base.startsWith("node")
-                    : filePath.startsWith("node/")
-                )
-              ? [/^node:/, "vuepress-shared/node"]
-              : []),
-            ...dtsExternal,
-          ],
+                    typeof filePath === "object"
+                      ? filePath.base.startsWith("client")
+                      : filePath.startsWith("client/")
+                  )
+                ? [
+                    /^@temp/,
+                    "vuepress/client",
+                    "vuepress/shared",
+                    "vuepress-shared/client",
+                    /\.s?css$/,
+                  ]
+                : (
+                      typeof filePath === "object"
+                        ? filePath.base.startsWith("node")
+                        : filePath.startsWith("node/")
+                    )
+                  ? [
+                      /^node:/,
+                      "vuepress/cli",
+                      "vuepress/core",
+                      "vuepress/shared",
+                      "vuepress/utils",
+                      "vuepress-shared/node",
+                    ]
+                  : [],
+            dtsExternal,
+          ].flat(),
         } as RollupOptions,
       ]
     : []),

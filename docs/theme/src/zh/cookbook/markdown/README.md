@@ -2,9 +2,10 @@
 title: Markdown 介绍
 icon: fab fa-markdown
 dir:
-  order: 2
+  collapsible: false
+  order: 1
 category:
-  - 教程知识
+  - 教程
   - Markdown
 tag:
   - 介绍
@@ -113,7 +114,11 @@ Markdown 将会把它转换为:
 
 「一个以上相连接的行句组成」这句话其实暗示了 Markdown 允许段落内的强迫断行，这个特性和其他大部分的 text-to-HTML 格式不一样 (包括 MovableType 的「Convert Line Breaks」选项) ，其它的格式会把每个断行都转成 `<br />` 标签。
 
-如果你*真的*想要插入 `<br />` 标签的话，在行尾加上两个以上的空白，然后按 enter。
+<!-- markdownlint-disable MD038 -->
+
+如果你*真的*想要插入 `<br />` 标签的话，在行尾加上两个以上的空格 () 或斜线 (`/`)，然后按 Enter。
+
+<!-- markdownlint-enable MD038 -->
 
 是的，这确实需要花比较多功夫来插入 `<br />` ，但是「每个换行都转换为 `<br />`」的方法在 Markdown 中并不适合， Markdown 中 email 式的 [块引言][bq] 和多段落的 [列表][l] 在使用换行来排版的时候，不但更好用，还更好阅读。
 
@@ -179,14 +184,14 @@ Markdown 也允许你只在整个段落的第一行最前面加上 `>` :
 引言的块内也可以使用其他的 Markdown 语法，包括标题、列表、代码块等:
 
 ```md
-> ## This is a header.
+> ## This is a header
 >
 > 1. This is the first list item.
 > 1. This is the second list item.
 >
 > Here's some example code:
 >
->     return shell_exec("echo $input | $markdown_script");
+> plain return shell_exec("echo $input | $markdown_script");
 ```
 
 任何标准的文字编辑器都能简单地建立 email 样式的引言，例如 BBEdit ，你可以选取文字后然后从选单中选择*增加引言阶层*。
@@ -393,7 +398,7 @@ end tell
 在代码块里面， `&` 、 `<` 和 `>` 会自动转成 HTML 实体，这样的方式让你非常容易使用 Markdown 插入范例用的 HTML 原始码，只需要复制粘贴，再加上缩进就可以了，剩下的 Markdown 都会帮你处理，例如:
 
 ````md
-```
+```plain
 <div class="footer">
   &copy; 2004 Foo Corporation
 </div>
@@ -651,7 +656,7 @@ Use the `printf()` function.
 如果要在代码内插入反引号，你可以用多个反引号来开启和结束行内代码:
 
 ```md
-`` There is a literal backtick (`) here. ``
+``There is a literal backtick (`) here.``
 ```
 
 这段语法会产生:
@@ -777,7 +782,7 @@ Markdown 会转成:
 >
 ```
 
-在浏览器里面，这段字串会变成一个可以点击的「address@example.com」链接。
+在浏览器里面，这段字串会变成一个可以点击的 <address@example.com> 链接。
 
 (这种作法虽然可以混淆不少的机器人，但并无法全部挡下来，不过这样也比什么都不做好些。无论如何，公开你的信箱终究会引来广告信件的。)
 

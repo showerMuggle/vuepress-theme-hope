@@ -7,7 +7,7 @@ This plugin will use lightgallery make the pictures in the body of the page ente
 
 <!-- more -->
 
-::: danger LICENSE RESTRICTIONS
+::: caution LICENSE RESTRICTIONS
 
 Please note that although this plugin release under MIT license, we are currently making this possible with a built-in [organization license of lightgallery](https://www.lightgalleryjs.com/license/) of VuePress Theme Hope, and we would like to admit you are a member of our organization if you are using it for non-commercial usage.
 
@@ -17,18 +17,39 @@ But PLEASE DO AWARE that organizational license can only be used on one product.
 
 YOU ARE WARNED!
 
-If you are worried about this, please consider using <ProjectLink name="photo-swipe">vuepress-plugin-photo-swipe</ProjectLink> instead.
+If you are worried about this, please consider using [@vuepress/plugin-photo-swipe][photo-swipe] instead.
 
 :::
+
+## Customize Options
+
+You can pass options to [`lightgallery`](https://www.lightgalleryjs.com/) by importing and calling `defineLightGalleryConfig` in [client config file][client-config]:
+
+```ts title=".vuepress/client.ts"
+import { defineClientConfig } from "vuepress/client";
+import { defineLightGalleryConfig } from "vuepress-plugin-lightgallery/client";
+
+defineLightGalleryConfig({
+  // lightgallery options here
+});
+
+export default defineClientConfig({
+  // ...
+});
+```
+
+## Operation Delay
+
+If your theme adds animations when switching pages, you may need to delay when lightgallery re-finds page images. You can configure this delay via the `delay` option, the default value is `800` (in milliseconds).
 
 ## Demo
 
 <!-- markdownlint-disable -->
 
 <div class="image-preview">
-  <img src="/assets/image/1.jpg" />
-  <img src="/assets/image/2.jpg" />
-  <img src="/assets/image/3.jpg" />
+  <img src="//theme-hope-assets.vuejs.press/files/img/1.jpg" />
+  <img src="//theme-hope-assets.vuejs.press/files/img/2.jpg" />
+  <img src="//theme-hope-assets.vuejs.press/files/img/3.jpg" />
 </div>
 
 <style>
@@ -60,3 +81,6 @@ If you are worried about this, please consider using <ProjectLink name="photo-sw
 </style>
 
 <!-- markdownlint-restore -->
+
+[client-config]: https://vuejs.press/guide/configuration.html#client-config-file
+[photo-swipe]: https://ecosystem.vuejs.press/plugins/features/photo-swipe.html

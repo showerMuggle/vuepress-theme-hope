@@ -1,5 +1,6 @@
-import { type VNode, computed, defineComponent, h } from "vue";
-import { keys } from "vuepress-shared/client";
+import { keys } from "@vuepress/helper/client";
+import type { CSSProperties, VNode } from "vue";
+import { computed, defineComponent, h } from "vue";
 
 import "../styles/font-icon.scss";
 
@@ -35,6 +36,16 @@ export default defineComponent({
       type: [String, Number],
       default: "",
     },
+
+    /**
+     * Icon vertical align
+     *
+     * 图标垂直对齐方式
+     */
+    verticalAlign: {
+      type: String,
+      default: "",
+    },
   },
 
   setup(props) {
@@ -52,14 +63,15 @@ export default defineComponent({
     });
 
     const style = computed(() => {
-      const styleObject: Record<string, string> = {};
+      const styleObject: CSSProperties = {};
 
-      if (props.color) styleObject["color"] = props.color;
+      if (props.color) styleObject.color = props.color;
 
       if (props.size)
-        styleObject["font-size"] = Number.isNaN(Number(props.size))
-          ? <string>props.size
+        styleObject.fontSize = Number.isNaN(Number(props.size))
+          ? (props.size as string)
           : `${props.size}px`;
+      if (props.verticalAlign) styleObject.verticalAlign = props.verticalAlign;
 
       return keys(styleObject).length ? styleObject : null;
     });

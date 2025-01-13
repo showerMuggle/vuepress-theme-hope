@@ -1,34 +1,38 @@
+import { LoadingIcon, decodeData, wait } from "@vuepress/helper/client";
 import { useDebounceFn, useEventListener } from "@vueuse/core";
-import { type EChartsOption, type EChartsType } from "echarts";
+import type { EChartsOption, EChartsType } from "echarts";
+import type { PropType, VNode } from "vue";
 import {
-  type PropType,
-  type VNode,
   defineComponent,
   h,
   onMounted,
   onUnmounted,
   ref,
+  shallowRef,
 } from "vue";
-import { LoadingIcon, atou } from "vuepress-shared/client";
 
+import { useEChartsConfig } from "../helpers/index.js";
 import "../styles/echarts.scss";
 
 declare const MARKDOWN_ENHANCE_DELAY: number;
 
-interface EchartsConfig {
+interface EChartsConfig {
   width?: number;
   height?: number;
   option: EChartsOption;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const AsyncFunction = (async (): Promise<void> => {}).constructor;
+
 const parseEChartsConfig = (
   config: string,
   type: "js" | "json",
-  myChart: EChartsType
-): EchartsConfig => {
+  myChart: EChartsType,
+): Promise<EChartsConfig> => {
   if (type === "js") {
-    // eslint-disable-next-line @typescript-eslint/no-implied-eval
-    const runner = new Function(
+    // eslint-disable-next-line
+    const runner = AsyncFunction(
       "myChart",
       `\
 let width,height,option,__echarts_config__;
@@ -37,13 +41,14 @@ ${config}
 __echarts_config__={width,height,option};
 }
 return __echarts_config__;
-`
+`,
     );
 
-    return <EchartsConfig>runner(myChart);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    return runner(myChart) as Promise<EChartsConfig>;
   }
 
-  return { option: <EChartsOption>JSON.parse(config) };
+  return Promise.resolve({ option: JSON.parse(config) as EChartsOption });
 };
 
 export default defineComponent({
@@ -51,7 +56,7 @@ export default defineComponent({
 
   props: {
     /**
-     * echarts config
+     * ECharts config
      *
      * 图表配置
      */
@@ -80,39 +85,45 @@ export default defineComponent({
   },
 
   setup(props) {
-    const loading = ref(true);
-    const echartsContainer = ref<HTMLElement>();
+    const echartsConfig = useEChartsConfig();
 
-    let chart: EChartsType;
+    const loading = ref(true);
+    const echartsContainer = shallowRef<HTMLElement>();
+
+    let instance: EChartsType | null = null;
 
     useEventListener(
       "resize",
-      useDebounceFn(() => chart?.resize(), 100)
+      useDebounceFn(() => {
+        instance?.resize();
+      }, 100),
     );
 
     onMounted(() => {
       void Promise.all([
         import(/* webpackChunkName: "echarts" */ "echarts"),
-        // delay
-        new Promise((resolve) => setTimeout(resolve, MARKDOWN_ENHANCE_DELAY)),
-      ]).then(([echarts]) => {
-        chart = echarts.init(echartsContainer.value!);
+        // Delay
+        wait(MARKDOWN_ENHANCE_DELAY),
+      ]).then(async ([echarts]) => {
+        await echartsConfig.setup?.();
 
-        const { option, ...size } = parseEChartsConfig(
-          atou(props.config),
+        instance = echarts.init(echartsContainer.value);
+
+        const { option, ...size } = await parseEChartsConfig(
+          decodeData(props.config),
           props.type,
-          chart
+          instance,
         );
 
-        chart.resize(size);
-        chart.setOption(option);
+        instance.resize(size);
+        instance.setOption({ ...echartsConfig.option, ...option });
 
         loading.value = false;
       });
     });
 
     onUnmounted(() => {
-      chart?.dispose();
+      instance?.dispose();
     });
 
     return (): (VNode | null)[] => [

@@ -1,18 +1,11 @@
-import { useToggle } from "@vueuse/core";
-import {
-  type PropType,
-  type VNode,
-  computed,
-  defineComponent,
-  h,
-  onMounted,
-  ref,
-} from "vue";
-import { LoadingIcon, atou } from "vuepress-shared/client";
+import { LoadingIcon, decodeData, wait } from "@vuepress/helper/client";
+import { useEventListener, useToggle } from "@vueuse/core";
+import type { PropType, SlotsType, VNode } from "vue";
+import { computed, defineComponent, h, onMounted, ref, shallowRef } from "vue";
 
 import { CODEPEN_SVG, JSFIDDLE_SVG } from "./icons.js";
-import { type CodeDemoOptions } from "../../shared/index.js";
-import { loadNormal, loadReact, loadVue } from "../composables/index.js";
+import type { CodeDemoOptions } from "../../shared/index.js";
+import { loadNormal, loadReact, loadVue } from "../composables/loadScript.js";
 import {
   getCode,
   getNormalCode,
@@ -82,22 +75,29 @@ export default defineComponent({
     },
   },
 
+  slots: Object as SlotsType<{
+    default: () => VNode[];
+  }>,
+
   setup(props, { slots }) {
     const [isExpanded, toggleIsExpand] = useToggle(false);
-    const demoWrapper = ref<HTMLDivElement>();
-    const codeContainer = ref<HTMLDivElement>();
+    const demoWrapper = shallowRef<HTMLDivElement>();
+    const codeContainer = shallowRef<HTMLDivElement>();
     const height = ref("0");
     const loaded = ref(false);
 
     const config = computed(
       () =>
-        <Partial<CodeDemoOptions>>(
-          JSON.parse(props.config ? atou(props.config) : "{}")
-        )
+        JSON.parse(
+          props.config ? decodeData(props.config) : "{}",
+        ) as Partial<CodeDemoOptions>,
     );
 
     const codeType = computed(() => {
-      const codeConfig = <Record<string, string>>JSON.parse(atou(props.code));
+      const codeConfig = JSON.parse(decodeData(props.code)) as Record<
+        string,
+        string
+      >;
 
       return getCode(codeConfig);
     });
@@ -106,15 +106,16 @@ export default defineComponent({
       props.type === "react"
         ? getReactCode(codeType.value, config.value)
         : props.type === "vue"
-        ? getVueCode(codeType.value, config.value)
-        : getNormalCode(codeType.value, config.value)
+          ? getVueCode(codeType.value, config.value)
+          : getNormalCode(codeType.value, config.value),
     );
 
     const isLegal = computed(() => code.value.isLegal);
 
     const initDom = (innerHTML = false): void => {
-      // attach a shadow root to demo
+      // Attach a shadow root to demo
 
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const shadowRoot = demoWrapper.value!.attachShadow({ mode: "open" });
       const appElement = document.createElement("div");
 
@@ -137,43 +138,60 @@ export default defineComponent({
     const loadDemo = (): Promise<void> => {
       switch (props.type) {
         case "react": {
-          return loadReact(code.value).then(() => initDom());
+          return loadReact(code.value).then(() => {
+            initDom();
+          });
         }
         case "vue": {
-          return loadVue(code.value).then(() => initDom());
+          return loadVue(code.value).then(() => {
+            initDom();
+          });
         }
 
         default: {
-          return loadNormal(code.value).then(() => initDom(true));
+          return loadNormal(code.value).then(() => {
+            initDom(true);
+          });
         }
       }
     };
 
-    onMounted(() => {
-      setTimeout(() => {
-        void loadDemo();
-      }, MARKDOWN_ENHANCE_DELAY);
+    useEventListener("beforeprint", () => {
+      toggleIsExpand(true);
+    });
+
+    onMounted(async () => {
+      await wait(MARKDOWN_ENHANCE_DELAY);
+      await loadDemo();
     });
 
     return (): VNode =>
-      h("div", { class: "code-demo-wrapper", id: props.id }, [
-        h("div", { class: "code-demo-header" }, [
+      h("div", { class: "vp-container vp-code-demo", id: props.id }, [
+        h("div", { class: "vp-container-header" }, [
           code.value.isLegal
             ? h("button", {
                 type: "button",
                 title: "toggle",
                 "aria-hidden": true,
-                class: ["toggle-button", isExpanded.value ? "down" : "end"],
+                class: [
+                  "vp-code-demo-toggle-button",
+                  isExpanded.value ? "down" : "end",
+                ],
                 onClick: () => {
                   height.value = isExpanded.value
                     ? "0"
-                    : `${codeContainer.value!.clientHeight + 13.8}px`;
+                    : // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                      `${codeContainer.value!.clientHeight + 13.8}px`;
                   toggleIsExpand();
                 },
               })
             : null,
           props.title
-            ? h("span", { class: "title" }, decodeURIComponent(props.title))
+            ? h(
+                "span",
+                { class: "vp-container-title" },
+                decodeURIComponent(props.title),
+              )
             : null,
 
           code.value.isLegal && code.value.jsfiddle !== false
@@ -207,7 +225,7 @@ export default defineComponent({
                     type: "hidden",
                     name: "resources",
                     value: [...code.value.cssLib, ...code.value.jsLib].join(
-                      ","
+                      ",",
                     ),
                   }),
                   h("button", {
@@ -215,9 +233,9 @@ export default defineComponent({
                     class: "jsfiddle-button",
                     innerHTML: JSFIDDLE_SVG,
                     "aria-label": "JSFiddle",
-                    "data-balloon-pos": "up",
+                    "data-balloon-pos": "down",
                   }),
-                ]
+                ],
               )
             : null,
 
@@ -244,19 +262,13 @@ export default defineComponent({
                       css_external: code.value.cssLib.join(";"),
                       layout: code.value.codepenLayout,
                       // eslint-disable-next-line @typescript-eslint/naming-convention
-                      html_pre_processor: codeType.value
-                        ? codeType.value.html[1]
-                        : "none",
+                      html_pre_processor: codeType.value.html[1] ?? "none",
                       // eslint-disable-next-line @typescript-eslint/naming-convention
-                      js_pre_processor: codeType.value
-                        ? codeType.value.js[1]
-                        : code.value.jsx
-                        ? "babel"
-                        : "none",
+                      js_pre_processor:
+                        codeType.value.js[1] ??
+                        (code.value.jsx ? "babel" : "none"),
                       // eslint-disable-next-line @typescript-eslint/naming-convention
-                      css_pre_processor: codeType.value
-                        ? codeType.value.css[1]
-                        : "none",
+                      css_pre_processor: codeType.value.css[1] ?? "none",
                       editors: code.value.codepenEditors,
                     }),
                   }),
@@ -265,16 +277,16 @@ export default defineComponent({
                     innerHTML: CODEPEN_SVG,
                     class: "codepen-button",
                     "aria-label": "Codepen",
-                    "data-balloon-pos": "up",
+                    "data-balloon-pos": "down",
                   }),
-                ]
+                ],
               )
             : null,
         ]),
-        loaded.value ? null : h(LoadingIcon, { class: "code-demo-loading" }),
+        loaded.value ? null : h(LoadingIcon, { class: "vp-code-demo-loading" }),
         h("div", {
           ref: demoWrapper,
-          class: "code-demo-container",
+          class: "vp-code-demo-display",
           style: {
             display: isLegal.value && loaded.value ? "block" : "none",
           },
@@ -282,15 +294,18 @@ export default defineComponent({
 
         h(
           "div",
-          { class: "code-demo-code-wrapper", style: { height: height.value } },
+          {
+            class: "vp-code-demo-code-wrapper",
+            style: { height: height.value },
+          },
           h(
             "div",
             {
               ref: codeContainer,
-              class: "code-demo-codes",
+              class: "vp-code-demo-codes",
             },
-            slots["default"]?.()
-          )
+            slots.default(),
+          ),
         ),
       ]);
   },

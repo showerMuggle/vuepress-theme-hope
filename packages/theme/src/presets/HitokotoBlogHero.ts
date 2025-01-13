@@ -1,6 +1,5 @@
+import type { CSSProperties, PropType, VNode } from "vue";
 import {
-  type PropType,
-  type VNode,
   defineComponent,
   h,
   nextTick,
@@ -10,7 +9,7 @@ import {
   watch,
 } from "vue";
 
-import DropTransition from "@theme-hope/components/transitions/DropTransition";
+import { DropTransition } from "@theme-hope/components/transitions/index";
 
 import "./hitokoto-blog-hero.scss";
 
@@ -36,6 +35,8 @@ interface HitokotoResult {
 export default defineComponent({
   name: "HitokotoBlogHero",
 
+  inheritAttrs: false,
+
   props: {
     /** Hero text */
     text: {
@@ -53,8 +54,8 @@ export default defineComponent({
     alt: { type: String, required: true },
 
     /** Hero image style */
-    heroStyle: {
-      type: [String, Object] as PropType<string | Record<string, string>>,
+    imageStyle: {
+      type: [String, Object] as PropType<string | CSSProperties>,
       default: null,
     },
   },
@@ -67,7 +68,7 @@ export default defineComponent({
 
     const getHitokoto = (): Promise<void> =>
       fetch("https://v1.hitokoto.cn")
-        .then((res) => <Promise<HitokotoResult>>res.json())
+        .then((res) => res.json() as Promise<HitokotoResult>)
         .then(({ from, hitokoto }) => {
           text.value = hitokoto;
           author.value = from;
@@ -82,7 +83,7 @@ export default defineComponent({
 
         const renderNextWord = (): Promise<void> => {
           display.value += text.value[index];
-          index++;
+          index += 1;
 
           return nextTick().then(() => {
             if (index < text.value.length)
@@ -111,8 +112,8 @@ export default defineComponent({
         props.image
           ? h("img", {
               key: "light",
-              class: ["hero-image", { light: props.imageDark }],
-              style: props.heroStyle,
+              class: ["vp-blog-hero-image", { light: props.imageDark }],
+              style: props.imageStyle,
               src: props.image,
               alt: props.alt,
             })
@@ -120,15 +121,17 @@ export default defineComponent({
         props.imageDark
           ? h("img", {
               key: "dark",
-              class: "hero-image dark",
-              style: props.heroStyle,
+              class: "vp-blog-hero-image dark",
+              style: props.imageStyle,
               src: props.imageDark,
               alt: props.alt,
             })
           : null,
       ]),
       h(DropTransition, { appear: true, delay: 0.08 }, () =>
-        props.text ? h("h1", props.text) : null
+        props.text
+          ? h("h1", { class: "vp-blog-hero-title" }, props.text)
+          : null,
       ),
       h("div", { class: "hitokoto" }, [
         h("p", { class: "hitokoto-text" }, h("span", display.value)),
@@ -138,7 +141,7 @@ export default defineComponent({
             class: "hitokoto-author",
             style: { opacity: display.value.length > 4 ? 1 : 0 },
           },
-          `——「${author.value}」`
+          `——「${author.value}」`,
         ),
       ]),
     ];

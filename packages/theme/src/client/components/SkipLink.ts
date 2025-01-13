@@ -1,5 +1,6 @@
-import { usePageData } from "@vuepress/client";
-import { type VNode, defineComponent, h, onMounted, ref, watch } from "vue";
+import type { VNode } from "vue";
+import { defineComponent, h, onMounted, shallowRef, watch } from "vue";
+import { usePageData } from "vuepress/client";
 
 import { useThemeLocaleData } from "@theme-hope/composables/index";
 
@@ -20,12 +21,12 @@ export default defineComponent({
     const page = usePageData();
     const themeLocale = useThemeLocaleData();
 
-    const skipToMainContent = ref<HTMLSpanElement>();
+    const skipToMainContent = shallowRef<HTMLSpanElement>();
 
     const focusMainContent = ({ target }: Event): void => {
-      const el = document.querySelector(
-        (target as HTMLAnchorElement).hash
-      ) as HTMLAnchorElement;
+      const el = document.querySelector<HTMLElement>(
+        (target as HTMLAnchorElement).hash,
+      );
 
       if (el) {
         const removeTabIndex = (): void => {
@@ -43,7 +44,10 @@ export default defineComponent({
     onMounted(() => {
       watch(
         () => page.value.path,
-        () => skipToMainContent.value!.focus()
+        () => {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          skipToMainContent.value!.focus();
+        },
       );
     });
 
@@ -56,10 +60,10 @@ export default defineComponent({
         "a",
         {
           href: `#${props.content}`,
-          class: "skip-link sr-only",
+          class: "vp-skip-link sr-only",
           onClick: focusMainContent,
         },
-        themeLocale.value.routeLocales.skipToContent
+        themeLocale.value.routeLocales.skipToContent,
       ),
     ];
   },

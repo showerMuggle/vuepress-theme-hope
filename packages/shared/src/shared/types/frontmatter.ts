@@ -1,6 +1,6 @@
-import { type PageFrontmatter } from "@vuepress/core";
+import type { PageFrontmatter } from "vuepress/shared";
 
-import { type Author } from "./author.js";
+import type { Author } from "./author.js";
 
 export interface BasePageFrontMatter extends PageFrontmatter {
   /**
@@ -30,6 +30,7 @@ export interface BasePageFrontMatter extends PageFrontmatter {
    * 页面分类
    */
   category?: string | string[];
+  categories?: string[];
 
   /**
    * Page Tag(s)
@@ -37,6 +38,7 @@ export interface BasePageFrontMatter extends PageFrontmatter {
    * 页面标签
    */
   tag?: string[] | string;
+  tags?: string[];
 
   /**
    * Whether the content is original
@@ -74,6 +76,13 @@ export interface BasePageFrontMatter extends PageFrontmatter {
   footer?: string | boolean;
 
   /**
+   * License text
+   *
+   * 协议文字
+   */
+  license?: string;
+
+  /**
    * Copyright text
    *
    * 版权文字
@@ -91,14 +100,4 @@ export interface BasePageFrontMatter extends PageFrontmatter {
    * @deprecated use `date` instead
    */
   time?: Date | string;
-
-  /**
-   * @deprecated use `category` instead
-   */
-  categories?: string[];
-
-  /**
-   * @deprecated use `tag` instead
-   */
-  tags?: string[];
 }

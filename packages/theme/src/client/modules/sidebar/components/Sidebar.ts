@@ -1,7 +1,7 @@
-import { type VNode, defineComponent, h, onMounted, ref, watch } from "vue";
-import { useRoute } from "vue-router";
+import type { SlotsType, VNode } from "vue";
+import { defineComponent, h, onMounted, shallowRef, watch } from "vue";
+import { useRoute } from "vuepress/client";
 
-import { useThemeLocaleData } from "@theme-hope/composables/index";
 import SidebarLinks from "@theme-hope/modules/sidebar/components/SidebarLinks";
 import { useSidebarItems } from "@theme-hope/modules/sidebar/composables/index";
 
@@ -10,43 +10,51 @@ import "../styles/sidebar.scss";
 export default defineComponent({
   name: "SideBar",
 
+  slots: Object as SlotsType<{
+    default?: () => VNode[] | VNode | null;
+    top?: () => VNode[] | VNode | null;
+    bottom?: () => VNode[] | VNode | null;
+  }>,
+
   setup(_props, { slots }) {
     const route = useRoute();
-    const themeLocale = useThemeLocaleData();
     const sidebarItems = useSidebarItems();
-    const sidebar = ref<HTMLElement>();
+
+    const sidebar = shallowRef<HTMLElement>();
 
     onMounted(() => {
-      // scroll to active sidebar item
+      // Scroll to active sidebar item
       watch(
         () => route.hash,
         (hash): void => {
-          // get the active sidebar item DOM, whose href equals to the current route
+          // Get the active sidebar item DOM, whose href equals to the current route
           const activeSidebarItem = document.querySelector(
-            `.sidebar a.sidebar-link[href="${route.path}${hash}"]`
+            `.vp-sidebar a.vp-sidebar-link[href="${route.path}${hash}"]`,
           );
 
           if (!activeSidebarItem) return;
 
-          // get the top and height of the sidebar
+          // Get the top and height of the sidebar
           const { top: sidebarTop, height: sidebarHeight } =
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             sidebar.value!.getBoundingClientRect();
-          // get the top and height of the active sidebar item
+          // Get the top and height of the active sidebar item
           const { top: activeSidebarItemTop, height: activeSidebarItemHeight } =
             activeSidebarItem.getBoundingClientRect();
 
-          // when the active sidebar item overflows the top edge of sidebar
+          // When the active sidebar item overflows the top edge of sidebar
           if (activeSidebarItemTop < sidebarTop)
-            // scroll to the top edge of sidebar
+            // Scroll to the top edge of sidebar
             activeSidebarItem.scrollIntoView(true);
-          // when the active sidebar item overflows the bottom edge of sidebar
+          // When the active sidebar item overflows the bottom edge of sidebar
           else if (
             activeSidebarItemTop + activeSidebarItemHeight >
             sidebarTop + sidebarHeight
           )
-            // scroll to the bottom edge of sidebar
+            // Scroll to the bottom edge of sidebar
             activeSidebarItem.scrollIntoView(false);
-        }
+        },
+        { immediate: true },
       );
     });
 
@@ -54,19 +62,17 @@ export default defineComponent({
       h(
         "aside",
         {
-          class: [
-            "sidebar",
-            { "hide-icon": themeLocale.value.sidebarIcon === false },
-          ],
-          id: "sidebar",
           ref: sidebar,
+          key: "sidebar",
+          id: "sidebar",
+          class: "vp-sidebar",
+          "vp-sidebar": "",
         },
         [
-          slots["top"]?.(),
-          slots["default"]?.() ||
-            h(SidebarLinks, { config: sidebarItems.value }),
-          slots["bottom"]?.(),
-        ]
+          slots.top?.(),
+          slots.default?.() ?? h(SidebarLinks, { config: sidebarItems.value }),
+          slots.bottom?.(),
+        ],
       );
   },
 });

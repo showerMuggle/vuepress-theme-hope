@@ -1,51 +1,49 @@
-import { bundle } from "../../scripts/rollup.js";
+import { rollupBundle } from "../../scripts/rollup.js";
 
 export default [
-  ...bundle("node/index", {
-    external: [
-      /^@mdit\/plugin-/,
-      "js-yaml",
-      "markdown-it/lib/token.js",
-      "markdown-it/lib/helpers/parse_link_label.js",
-    ],
+  ...rollupBundle("node/index", {
+    external: [/^@mdit\/plugin-/],
     dtsExternal: ["vuepress-shared"],
   }),
-  ...bundle(
+  ...rollupBundle(
     {
       base: "client",
       files: [
-        "compact/index",
+        "index",
         "components/ChartJS",
         "components/CodeDemo",
-        "components/CodeTabs",
         "components/ECharts",
         "components/FlowChart",
+        "components/KotlinPlayground",
+        "components/MarkMap",
+        "components/MdDemo",
         "components/Mermaid",
         "components/Playground",
-        "components/Presentation",
-        "components/Tabs",
-        "components/VPCard",
+        "components/SandPack",
         "components/VuePlayground",
-        "SlidePage",
-        "reveal/index",
       ],
     },
 
     {
       external: [
-        "@mermaid",
         "@vue/repl",
+        "@vue/repl/codemirror-editor",
+        "@vue/repl/monaco-editor",
         "balloon-css/balloon.css",
         "chart.js/auto",
         "echarts",
         "flowchart.ts",
-        "mermaid",
-        /^reveal\.js/,
+        "kotlin-playground",
+        "markmap-lib",
+        "markmap-toolbar",
+        "markmap-view",
+        "mermaid/dist/mermaid.esm.min.mjs",
+        "sandpack-vue3",
       ],
       copy: [
         ["client/styles", "client"],
         ["client/compact/styles", "client/compact"],
       ],
-    }
+    },
   ),
 ];

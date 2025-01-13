@@ -1,4 +1,4 @@
-import { type ThemeLocaleData } from "../../shared/index.js";
+import type { ThemeLocaleData } from "../../shared/index.js";
 
 export const nlLocale: ThemeLocaleData = {
   lang: "nl-NL",
@@ -36,6 +36,7 @@ export const nlLocale: ThemeLocaleData = {
     all: "Alle",
     intro: "Persoonlijke Intro",
     star: "Star",
+    empty: "$text is leeg",
   },
 
   paginationLocales: {
@@ -70,6 +71,5 @@ export const nlLocale: ThemeLocaleData = {
     ],
     back: "Ga terug",
     home: "Ga terug naar home",
-    openInNewWindow: "Open in een nieuw venster",
   },
 };

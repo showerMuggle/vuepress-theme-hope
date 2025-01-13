@@ -3,6 +3,13 @@
 exports[`should list dir correctly 1`] = `
 [
   "database.ts",
+  "package-manager/global/package.json",
+  "package-manager/lock-file/npm/package-lock.json",
+  "package-manager/lock-file/npm/package.json",
+  "package-manager/lock-file/pnpm/package.json",
+  "package-manager/lock-file/pnpm/pnpm-lock.yaml",
+  "package-manager/lock-file/yarn/package.json",
+  "package-manager/lock-file/yarn/yarn.lock",
   "src/README.md",
   "src/component.md",
   "src/cut.md",

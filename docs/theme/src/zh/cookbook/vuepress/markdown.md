@@ -3,7 +3,7 @@ title: 内置 Markdown 拓展
 icon: fab fa-markdown
 order: 2
 category:
-  - 教程知识
+  - 教程
   - VuePress
 tag:
   - Markdown
@@ -16,7 +16,7 @@ VuePress 会使用 [markdown-it](https://github.com/markdown-it/markdown-it) 来
 
 本章节将会介绍 VuePress 内置支持的 Markdown 语法扩展。
 
-你也可以通过 [markdown](https://v2.vuepress.vuejs.org/zh/reference/config.html#markdown) 和 [extendsMarkdown](https://v2.vuepress.vuejs.org/zh/reference/plugin-api.html#extendsmarkdown) 来配置这些内置扩展、加载更多 markdown-it 插件、实现你自己的扩展等。
+你也可以通过 [markdown](https://vuejs.press/zh/reference/config.html#markdown) 和 [extendsMarkdown](https://vuejs.press/zh/reference/plugin-api.html#extendsmarkdown) 来配置这些内置扩展、加载更多 markdown-it 插件、实现你自己的扩展等。
 
 ### 内置
 
@@ -32,7 +32,7 @@ VuePress 会使用 [markdown-it](https://github.com/markdown-it/markdown-it) 来
 ::: tip
 标题锚点扩展由 [markdown-it-anchor](https://github.com/valeriangalliat/markdown-it-anchor) 支持。
 
-配置参考: [markdown.anchor](https://v2.vuepress.vuejs.org/zh/reference/config.html#markdown-anchor)
+配置参考: [markdown.anchor](https://vuejs.press/zh/reference/config.html#markdown-anchor)
 :::
 
 ### 链接
@@ -113,12 +113,12 @@ VuePress 会使用 [markdown-it](https://github.com/markdown-it/markdown-it) 来
 
 - 相对路径是指向目标文件的有效链接，在你的编辑器或者代码仓库中浏览源文件时也可以正确跳转。
 - 相对路径在不同 locales 下都是一致的，这样在翻译你的内容时就不需要修改 locale 路径了。
-- 在使用绝对路径时，如果你站点的 [base](https://v2.vuepress.vuejs.org/zh/reference/config.html#base) 不是 `"/"`，你需要手动添加 `base` 或者使用 [base helper](https://v2.vuepress.vuejs.org/guide/assets.html#base-helper) 。
+- 在使用绝对路径时，如果你站点的 [base](https://vuejs.press/zh/reference/config.html#base) 不是 `"/"`，你需要手动添加 `base` 或者使用 [base helper](https://vuejs.press/guide/assets.html#base-helper) 。
 
 ::: tip
 链接扩展是由我们的内置插件支持的。
 
-配置参考: [markdown.links](https://v2.vuepress.vuejs.org/zh/reference/config.html#markdown-links)
+配置参考: [markdown.links](https://vuejs.press/zh/reference/config.html#markdown-links)
 :::
 
 ### Emoji
@@ -140,7 +140,7 @@ VuePress 2 已经发布 :tada: ！
 ::: tip
 Emoji 扩展由 [markdown-it-emoji](https://github.com/markdown-it/markdown-it-emoji) 支持。
 
-配置参考: [markdown.emoji](https://v2.vuepress.vuejs.org/zh/reference/config.html#markdown-emoji)
+配置参考: [markdown.emoji](https://vuejs.press/zh/reference/config.html#markdown-emoji)
 :::
 
 ### 目录
@@ -162,47 +162,91 @@ Emoji 扩展由 [markdown-it-emoji](https://github.com/markdown-it/markdown-it-e
 ::: tip
 目录扩展是由我们的内置插件支持的，该扩展 Fork 并修改自 [markdown-it-toc-done-right](https://github.com/nagaozen/markdown-it-toc-done-right)。
 
-配置参考: [markdown.toc](https://v2.vuepress.vuejs.org/zh/reference/config.html#markdown-toc)
+配置参考: [markdown.toc](https://vuejs.press/zh/reference/config.html#markdown-toc)
 :::
 
 ### 代码块
 
-下列代码块扩展是在 Node 端进行 Markdown 解析的时候实现的。这意味着代码块并不会在客户端被处理。
+下列代码块扩展都是在 Node 端进行 Markdown 解析时实现的，也就是代码块并不会在客户端被处理。
 
-#### 行高亮
+通过 [@vuepress/plugin-prismjs][prismjs] 和 [@vuepress/plugin-shiki][shiki]，你可以通过 [Prism](https://prismjs.com/) 或 [Shiki](https://shiki.tmrs.site/) 来高亮代码块。
 
-你可以在代码块添加行数范围标记，来为对应代码行进行高亮:
+#### 代码标题
+
+你可以在代码块添加一个 `title` 键值对来为代码块设置标题。
 
 输入:
 
 ````md
-```ts {1,6-8}
-import type { UserConfig } from "@vuepress/cli";
+```ts title=".vuepress/config.ts"
 import { defaultTheme } from "@vuepress/theme-default";
+import { defineUserConfig } from "vuepress";
 
-export const config: UserConfig = {
+export default defineUserConfig({
   title: "你好， VuePress",
 
   theme: defaultTheme({
     logo: "https://vuejs.org/images/logo.png",
   }),
-};
+});
 ```
 ````
 
 输出:
 
-```ts {1,6-8}
-import type { UserConfig } from "@vuepress/cli";
+```ts title=".vuepress/config.ts"
 import { defaultTheme } from "@vuepress/theme-default";
+import { defineUserConfig } from "vuepress";
 
-export const config: UserConfig = {
+export default defineUserConfig({
   title: "你好， VuePress",
 
   theme: defaultTheme({
     logo: "https://vuejs.org/images/logo.png",
   }),
-};
+});
+```
+
+::: tip
+
+代码标题是通过高亮器插件默认支持的。它可以和下列的其他标记一起使用。请在它们之间使用空格分隔。
+
+:::
+
+#### 行高亮
+
+你可以在代码块添加行数范围标记，来为对应代码行进行高亮。
+
+输入:
+
+````md
+```ts{1,7-9}
+import { defaultTheme } from '@vuepress/theme-default'
+import { defineUserConfig } from 'vuepress'
+
+export default defineUserConfig({
+  title: '你好， VuePress',
+
+  theme: defaultTheme({
+    logo: 'https://vuejs.org/images/logo.png',
+  }),
+})
+```
+````
+
+输出:
+
+```ts{1,7-9}
+import { defaultTheme } from '@vuepress/theme-default'
+import { defineUserConfig } from 'vuepress'
+
+export default defineUserConfig({
+  title: '你好， VuePress',
+
+  theme: defaultTheme({
+    logo: 'https://vuejs.org/images/logo.png',
+  }),
+})
 ```
 
 行数范围标记的例子:
@@ -212,9 +256,11 @@ export const config: UserConfig = {
 - 组合: `{4,7-13,16,23-27,40}`
 
 ::: tip
-行高亮扩展是由我们的内置插件支持的，该扩展 Fork 并修改自 [markdown-it-highlight-lines](https://github.com/egoist/markdown-it-highlight-lines)。
 
-配置参考: [markdown.code.highlightLines](https://v2.vuepress.vuejs.org/zh/reference/config.html#markdown-code-highlightlines)
+行高亮扩展是通过高亮器插件默认支持的。
+
+配置参考: [prism 行高亮](https://ecosystem.vuejs.press/zh/plugins/markdown/prismjs.html#highlightlines) 和 [shiki 行高亮](https://ecosystem.vuejs.press/zh/plugins/markdown/shiki.html#highlightlines)
+
 :::
 
 #### 行号
@@ -254,9 +300,11 @@ const line3 = 'This is line 3'
 ```
 
 ::: tip
-行号扩展是由我们的内置插件支持的。
 
-配置参考: [markdown.code.lineNumbers](https://v2.vuepress.vuejs.org/zh/reference/config.html#markdown-code-linenumbers)
+行号扩展是通过高亮器插件默认支持的。
+
+配置参考: [prism 行号](https://ecosystem.vuejs.press/zh/plugins/markdown/prismjs.html#linenumbers) 和 [shiki 行号](https://ecosystem.vuejs.press/zh/plugins/markdown/shiki.html#linenumbers)
+
 :::
 
 #### 添加 v-pre
@@ -301,7 +349,7 @@ const onePlusTwoPlusThree = {{ 1 + 2 + 3 }}
 1 + 2 + 3 = {{ 1 + 2 + 3 }}
 ```
 
-```md:no-v-pre
+```text:no-v-pre
 <!-- 这里会被 Vue 编译 -->
 1 + 2 + 3 = {{ 1 + 2 + 3 }}
 ```
@@ -319,7 +367,7 @@ const onePlusTwoPlusThree = {{ 1 + 2 + 3 }}
 ::: tip
 v-pre 扩展是由我们的内置插件支持的。
 
-配置参考: [markdown.code.vPre](https://v2.vuepress.vuejs.org/zh/reference/config.html#markdown-vpre)
+配置参考: [markdown.code.vPre](https://vuejs.press/zh/reference/config.html#markdown-vpre)
 :::
 
 ### 导入代码块
@@ -370,7 +418,7 @@ v-pre 扩展是由我们的内置插件支持的。
 需要注意的是，路径别名在导入代码语法中不会生效。你可以通过下面的配置来自行处理路径别名:
 
 ```js
-import { getDirname, path } from "@vuepress/utils";
+import { getDirname, path } from "vuepress/utils";
 
 const __dirname = getDirname(import.meta.url);
 
@@ -393,14 +441,14 @@ export default {
 ::: tip
 导入代码扩展是由我们的内置插件支持的。
 
-配置参考: [markdown.importCode](https://v2.vuepress.vuejs.org/zh/reference/config.html#markdown-importcode)
+配置参考: [markdown.importCode](https://vuejs.press/zh/reference/config.html#markdown-importcode)
 :::
 
 ## 在 Markdown 中使用 Vue
 
 这一章节会介绍 Vue 在 Markdown 中一些基本用法。
 
-可以前往 [Cookbook > Markdown 和 Vue SFC](https://v2.vuepress.vuejs.org/zh/advanced/cookbook/markdown-and-vue-sfc.html) 来了解更多内容。
+可以前往 [Cookbook > Markdown 和 Vue SFC](https://vuejs.press/zh/advanced/cookbook/markdown-and-vue-sfc.html) 来了解更多内容。
 
 ### 模板语法
 
@@ -445,9 +493,9 @@ export default {
 
 ::: tip
 
-前往 [内置组件](https://v2.vuepress.vuejs.org/zh/reference/components.html) 查看所有内置组件。
+前往 [内置组件](https://vuejs.press/zh/reference/components.html) 查看所有内置组件。
 
-前往 [默认主题 > 内置组件](https://v2.vuepress.vuejs.org/zh/reference/default-theme/components.html) 查看默认主题中的所有内置组件。
+前往 [默认主题 > 内置组件](https://vuejs.press/zh/reference/default-theme/components.html) 查看默认主题中的所有内置组件。
 
 :::
 
@@ -463,5 +511,8 @@ export default {
 
 - 添加一个 [v-pre](https://v3.cn.vuejs.org/api/directives.html#v-pre) 指令来跳过这个元素和它的子元素的编译过程。注意所有的模板语法也都会失效。
 - 设置 [compilerOptions.isCustomElement](https://v3.vuejs.org/api/application-config.html#compileroptions) 来告诉 Vue 模板编译器不要尝试作为组件来解析它们。
-  - 对于 `@bundler-webpack` ，设置 [vue.compilerOptions](https://v2.vuepress.vuejs.org/zh/reference/bundler/webpack.html#vue)
-  - 对于 `@bundler-vite` ，设置 [vuePluginOptions.template.compilerOptions](https://v2.vuepress.vuejs.org/zh/reference/bundler/vite.html#vuepluginoptions)
+  - 对于 `@vuepress/bundler-webpack` ，设置 [vue.compilerOptions](https://vuejs.press/zh/reference/bundler/webpack.html#vue)
+  - 对于 `@vuepress/bundler-vite` ，设置 [vuePluginOptions.template.compilerOptions](https://vuejs.press/zh/reference/bundler/vite.html#vuepluginoptions)
+
+[prismjs]: https://ecosystem.vuejs.press/zh/plugins/markdown/prismjs.html
+[shiki]: https://ecosystem.vuejs.press/zh/plugins/markdown/shiki.html
